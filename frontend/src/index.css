@@ -1,84 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-primary: #05080e;
+  --bg-secondary: #0a111a;
+  --bg-tertiary: #121d2a;
+  
+  --accent-cyan: #10b981;
+  --accent-blue: #059669;
+  --accent-indigo: #34d399;
+  --accent-purple: #0f766e;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --border-color: rgba(255, 255, 255, 0.06);
+  --border-focus: #10b981;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 0 15px rgba(16, 185, 129, 0.15);
+  
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
-  color: #2c3e50;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  font-weight: 400;
-}
-
 html {
   scroll-behavior: smooth;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  overflow-x: hidden;
 }
 
 code {
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
 }
 
-/* Medical Professional Typography */
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
   font-weight: 600;
-  color: #2c3e50;
-  line-height: 1.3;
+  color: var(--text-primary);
+  line-height: 1.25;
 }
 
 p {
-  color: #34495e;
-  line-height: 1.7;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
-/* Custom scrollbar for medical theme */
+/* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f8f9fa;
-  border-radius: 4px;
+  background: var(--bg-primary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-  border-radius: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+  background: var(--accent-cyan);
 }
 
-/* Focus styles for accessibility */
-button:focus,
-input:focus,
-textarea:focus,
-select:focus {
-  outline: 2px solid #3498db;
+/* Accessibility Focus */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent-cyan);
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
-/* Medical Professional Animations */
-@keyframes pulse {
-  0%, 100% { 
-    opacity: 1; 
-    transform: scale(1);
-  }
-  50% { 
-    opacity: 0.7; 
-    transform: scale(1.05);
-  }
-}
-
+/* Modern Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -86,10 +105,10 @@ select:focus {
   }
 }
 
-@keyframes slideIn {
+@keyframes slideInLeft {
   from {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateX(-15px);
   }
   to {
     opacity: 1;
@@ -97,138 +116,65 @@ select:focus {
   }
 }
 
-/* Medical Professional Utility Classes */
-.medical-gradient {
-  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  }
 }
 
-.success-gradient {
-  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
-.warning-gradient {
-  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+/* Utility Classes */
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
 }
 
-.danger-gradient {
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+.animate-slide-in {
+  animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Medical Professional Shadows */
-.medical-shadow {
-  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+.glass-panel {
+  background: rgba(10, 17, 26, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
 }
 
-.medical-shadow-hover {
-  box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+.glow-cyan {
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
 }
 
-/* Medical Professional Borders */
-.medical-border {
-  border: 1px solid #e9ecef;
+.glow-purple {
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
 }
 
-.medical-border-top {
-  border-top: 3px solid #3498db;
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-indigo) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Medical Professional Text Colors */
-.text-primary {
-  color: #2c3e50;
-}
-
-.text-secondary {
-  color: #7f8c8d;
-}
-
-.text-success {
-  color: #27ae60;
-}
-
-.text-warning {
-  color: #f39c12;
-}
-
-.text-danger {
-  color: #e74c3c;
-}
-
-.text-info {
-  color: #3498db;
-}
-
-/* Medical Professional Background Colors */
-.bg-primary {
-  background-color: #3498db;
-}
-
-.bg-success {
-  background-color: #27ae60;
-}
-
-.bg-warning {
-  background-color: #f39c12;
-}
-
-.bg-danger {
-  background-color: #e74c3c;
-}
-
-.bg-light {
-  background-color: #f8f9fa;
-}
-
-/* Medical Professional Spacing */
-.medical-padding {
-  padding: 1.5rem;
-}
-
-.medical-margin {
-  margin: 1.5rem 0;
-}
-
-/* Medical Professional Rounded Corners */
-.medical-rounded {
-  border-radius: 8px;
-}
-
-.medical-rounded-lg {
-  border-radius: 12px;
-}
-
-.medical-rounded-xl {
-  border-radius: 16px;
-}
-
-/* Medical Professional Transitions */
-.medical-transition {
-  transition: all 0.3s ease;
-}
-
-/* Medical Professional Hover Effects */
-.medical-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(44, 62, 80, 0.15);
-}
-
-/* Medical Professional Loading States */
-.medical-loading {
+.gradient-border-btn {
   position: relative;
-  overflow: hidden;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.medical-loading::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-  0% { left: -100%; }
-  100% { left: 100%; }
+.gradient-border-btn:hover {
+  border-color: var(--accent-cyan);
+  box-shadow: var(--shadow-glow);
+  color: #fff;
 }

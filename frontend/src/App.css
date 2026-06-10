@@ -1,260 +1,341 @@
-/* Medical Professional Theme - Enhanced App.css */
-.App {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #1a1a1a;
-  scroll-behavior: smooth;
-}
+/* Premium Medical Diagnostic Dashboard - App.css */
 
-/* Navbar */
-.navbar {
+.dashboard-container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  color: #ffffff;
-  padding: 1rem 2rem;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 4px 20px rgba(30, 58, 138, 0.25);
-  border-bottom: 4px solid #3b82f6;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
-.logo {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #ffffff;
+/* Sidebar Navigation */
+.sidebar {
+  width: 280px;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem 1.5rem;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-section {
   display: flex;
   align-items: center;
   gap: 12px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  user-select: none;
+  margin-bottom: 3rem;
 }
 
-.logo::before {
-  content: "";
+.logo-section h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-indigo) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: var(--font-display);
+}
+
+.logo-icon {
   font-size: 2rem;
+  color: var(--accent-cyan);
+  display: flex;
+  align-items: center;
 }
 
-.nav-info {
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-grow: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background: rgba(16, 185, 129, 0.08);
+  color: var(--accent-cyan);
+  border-left: 3px solid var(--accent-cyan);
+  border-radius: 0 8px 8px 0;
+}
+
+.nav-item svg {
+  font-size: 1.2rem;
+}
+
+.sidebar-footer {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+}
+
+.author-credits {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.author-credits a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.author-credits a:hover {
+  text-decoration: underline;
+}
+
+/* Main Content Wrapper */
+.main-content {
+  flex-grow: 1;
+  margin-left: 280px;
+  padding: 2rem 2.5rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-primary);
+}
+
+/* Header Area */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.5rem;
+}
+
+.header-title h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.header-title p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.header-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
-  flex-wrap: wrap;
 }
 
-.medical-indicator {
-  display: inline-flex;
+.hospital-badge {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--accent-cyan);
+}
+
+.logout-button {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(59, 130, 246, 0.15);
-  padding: 10px 18px;
-  border-radius: 25px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #ffffff;
-  border: 2px solid rgba(59, 130, 246, 0.4);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
-  user-select: none;
-  white-space: nowrap;
+  transition: all 0.2s ease;
 }
 
-.logged-in-id {
-  font-weight: 600;
-  color: #10b981;
-  background: #ecfdf5;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 1rem;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-  user-select: none;
-  white-space: nowrap;
-  transition: background-color 0.3s ease;
+.logout-button:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
 }
 
-.logged-in-id:hover,
-.logged-in-id:focus {
-  background: #d1fae5;
-  cursor: default;
+/* Dashboard Home / Widgets */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
-/* Buttons */
-.nav-btn {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  border: none;
-  padding: 0.9rem 1.8rem;
-  color: #ffffff;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  user-select: none;
-  white-space: nowrap;
+.stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.nav-btn:hover,
-.nav-btn:focus-visible {
+.stat-card:hover {
+  border-color: rgba(6, 182, 212, 0.25);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  outline: none;
+  box-shadow: var(--shadow-glow);
 }
 
-.logout-btn {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+.stat-info h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
 }
 
-.logout-btn:hover,
-.logout-btn:focus-visible {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  box-shadow: 0 6px 20px rgba(220, 18, 18, 0.5);
-}
-
-/* Header */
-.App-header {
-  text-align: center;
-  padding: 4rem 2rem 5rem;
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  color: #ffffff;
-  position: relative;
-  overflow: hidden;
-  user-select: none;
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
-  box-shadow: 0 8px 30px rgba(30, 58, 138, 0.3);
-}
-
-.App-header::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-  opacity: 0.18;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.App-header h1 {
-  font-size: 3.5rem;
+.stat-info p {
+  font-size: 1.75rem;
   font-weight: 700;
-  margin-bottom: 1.2rem;
-  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
-  position: relative;
-  z-index: 1;
-  letter-spacing: 0.5px;
-  color: #ffffff;
-  user-select: text;
+  color: var(--text-primary);
+  margin-top: 4px;
+  font-family: var(--font-display);
 }
 
-.App-header p {
-  font-size: 1.3rem;
-  opacity: 0.95;
-  max-width: 820px;
-  margin: 0 auto;
-  line-height: 1.8;
-  position: relative;
-  z-index: 1;
-  font-weight: 400;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-  color: #ffffff;
-  user-select: text;
+.stat-icon {
+  font-size: 1.8rem;
+  padding: 12px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.App-header .subtitle {
-  font-size: 1.1rem;
-  opacity: 0.85;
-  margin-top: 1.8rem;
-  font-style: italic;
-  font-weight: 300;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-  color: #ffffff;
-  user-select: text;
+.stat-icon.blue { background: rgba(5, 150, 105, 0.08); color: var(--accent-blue); }
+.stat-icon.cyan { background: rgba(16, 185, 129, 0.08); color: var(--accent-cyan); }
+.stat-icon.purple { background: rgba(15, 118, 110, 0.08); color: var(--accent-purple); }
+.stat-icon.indigo { background: rgba(52, 211, 153, 0.08); color: var(--accent-indigo); }
+
+/* Quick Overview Layout */
+.overview-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
 }
 
-/* Main content */
-main {
-  padding: 3rem 2rem 4rem;
-  max-width: 1300px;
-  margin: 0 auto;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
-  min-height: 60vh;
+.overview-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
 }
 
-/* Medical Professional Indicators */
-.medical-indicator {
-  font-size: 14px;
-  border-radius: 30px;
+.overview-card h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
 }
 
-/* Responsive Design */
-@media (max-width: 900px) {
-  .navbar {
-    padding: 1rem 1.2rem;
-    flex-direction: column;
-    gap: 0.8rem;
+.overview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.overview-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-color);
+}
+
+.overview-item-info h4 {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.overview-item-info p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Tumor Badge colors */
+.tumor-badge {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tumor-badge.glioma { background: rgba(139, 92, 246, 0.12); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+.tumor-badge.meningioma { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+.tumor-badge.no-tumor { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+.tumor-badge.pituitary { background: rgba(6, 182, 212, 0.12); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+
+/* tab transitions styling */
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+  .overview-section {
+    grid-template-columns: 1fr;
   }
+}
 
-  .nav-info {
+@media (max-width: 768px) {
+  .sidebar {
+    width: 80px;
+    padding: 1.5rem 0.5rem;
+  }
+  
+  .logo-section h2, .sidebar-footer {
+    display: none;
+  }
+  
+  .nav-item {
     justify-content: center;
+    padding: 12px;
   }
-
-  .App-header h1 {
-    font-size: 2.8rem;
+  
+  .nav-item span {
+    display: none;
   }
-
-  main {
-    padding: 2rem 1rem 3rem;
+  
+  .main-content {
+    margin-left: 80px;
+    padding: 1.5rem;
   }
-}
-
-@media (max-width: 480px) {
-  .navbar {
-    gap: 0.6rem;
-    padding: 0.9rem 1rem;
-  }
-
-  .logo {
-    font-size: 1.4rem;
-  }
-
-  .App-header h1 {
-    font-size: 2.2rem;
-  }
-
-  main {
-    padding: 1.5rem 1rem 2rem;
-    border-radius: 15px;
-  }
-
-  .nav-btn {
-    padding: 0.7rem 1.3rem;
-    font-size: 13px;
-  }
-}
-.logo-img {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-  border-radius: 4px;
-  background: transparent;
-}
-.logo-img {
-  width: 50px;
-  height: 50px;
-  object-fit: contain;
-  border-radius: 6px;
-  background: transparent;
 }

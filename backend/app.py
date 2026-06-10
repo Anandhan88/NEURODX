@@ -1,3 +1,10 @@
+import builtins
+def print(*args, **kwargs):
+    try:
+        builtins.print(*args, **kwargs)
+    except Exception:
+        pass
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -15,36 +22,43 @@ import certifi
 load_dotenv()
 
 # ========== Initialize Flask app ==========
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend/build', static_url_path='/')
 CORS(app)
 
 # ========== MongoDB Setup ==========
 MONGO_URI = os.getenv("MONGO_URI")
 print("MONGO_URI:", MONGO_URI)
 
+history_fallback = []
+history_collection = None
+
 try:
-    client = MongoClient(
-        MONGO_URI,
-        tls=True,
-        tlsCAFile=certifi.where(),
-        tlsAllowInvalidCertificates=False,
-        tlsAllowInvalidHostnames=False
-    )
+    if MONGO_URI:
+        client = MongoClient(
+            MONGO_URI,
+            tls=True,
+            tlsCAFile=certifi.where(),
+            tlsAllowInvalidCertificates=False,
+            tlsAllowInvalidHostnames=False
+        )
+    else:
+        client = MongoClient("mongodb://localhost:27017/")
     db = client["brain_tumor_db"]
     users_collection = db["users"]
+    history_collection = db["history"]
     client.admin.command('ping')
-    print("✅ MongoDB connection successful!")
+    print("[OK] MongoDB connection successful!")
 except Exception as e:
-    print("❌ MongoDB connection failed:", e)
+    print("[ERROR] MongoDB connection failed:", e)
 
 # ========== Load Brain Tumor Classifier Model ==========
 try:
     MODEL_PATH = os.path.join("model", "brain_tumor_classifier.h5")
     print(f"Loading model from: {MODEL_PATH}")
     model = load_model(MODEL_PATH)
-    print("✅ Model loaded successfully!")
+    print("[OK] Model loaded successfully!")
 except Exception as e:
-    print(f"❌ Error loading model: {e}")
+    print(f"[ERROR] Error loading model: {e}")
     model = None
 
 # Class labels
@@ -64,6 +78,10 @@ def preprocess_image(img):
 # ========== API Endpoints ==========
 
 @app.route('/', methods=['GET'])
+def serve_index():
+    return app.send_static_file('index.html')
+
+@app.route('/health', methods=['GET'])
 def health_check():
     return jsonify({
         'status': 'healthy',
@@ -75,13 +93,13 @@ def health_check():
 def login():
     try:
         data = request.get_json()
-        hospital_id = data.get("hospital_id")
+        email = data.get("email")
         password = data.get("password")
 
-        if not hospital_id or not password:
-            return jsonify({"error": "Missing Hospital ID or Password"}), 400
+        if not email or not password:
+            return jsonify({"error": "Missing Email or Password"}), 400
 
-        user = users_collection.find_one({"hospital_id": hospital_id})
+        user = users_collection.find_one({"email": email})
         if user and user["password"] == password:
             return jsonify({"message": "Login successful"}), 200
         else:
@@ -94,20 +112,20 @@ def login():
 def signup():
     try:
         data = request.get_json()
-        hospital_id = data.get("hospital_id")
+        email = data.get("email")
         password = data.get("password")
         hospital_name = data.get("hospital_name")
         phone_number = data.get("phone_number")
 
-        if not all([hospital_id, password, hospital_name, phone_number]):
+        if not all([email, password, hospital_name, phone_number]):
             return jsonify({"error": "All fields are required"}), 400
 
-        existing_user = users_collection.find_one({"hospital_id": hospital_id})
+        existing_user = users_collection.find_one({"email": email})
         if existing_user:
-            return jsonify({"error": "Hospital ID already registered"}), 409
+            return jsonify({"error": "Email address already registered"}), 409
 
         users_collection.insert_one({
-            "hospital_id": hospital_id,
+            "email": email,
             "password": password,
             "hospital_name": hospital_name,
             "phone_number": phone_number
@@ -152,13 +170,66 @@ def predict():
         print(f"Traceback: {traceback.format_exc()}")
         return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
 
+from datetime import datetime
+
+@app.route('/history', methods=['POST'])
+def save_history():
+    try:
+        data = request.get_json()
+        patient_name = data.get("patient_name", "Anonymous")
+        patient_id = data.get("patient_id", "N/A")
+        patient_age = data.get("patient_age", "N/A")
+        doctor_notes = data.get("doctor_notes", "")
+        tumor_class = data.get("tumor_class")
+        confidence = data.get("confidence")
+        timestamp = data.get("timestamp") or datetime.now().isoformat()
+        
+        record = {
+            "patient_name": patient_name,
+            "patient_id": patient_id,
+            "patient_age": patient_age,
+            "doctor_notes": doctor_notes,
+            "tumor_class": tumor_class,
+            "confidence": confidence,
+            "timestamp": timestamp
+        }
+        
+        if history_collection is not None:
+            history_collection.insert_one(record)
+            record["_id"] = str(record["_id"])
+        else:
+            history_fallback.append(record)
+            
+        return jsonify({"message": "Scan history saved successfully", "record": record}), 200
+    except Exception as e:
+        print(f"Error saving history: {e}")
+        return jsonify({"error": f"Failed to save history: {str(e)}"}), 500
+
+@app.route('/history', methods=['GET'])
+def get_history():
+    try:
+        if history_collection is not None:
+            records = list(history_collection.find().sort("timestamp", -1))
+            for r in records:
+                r["_id"] = str(r["_id"])
+        else:
+            records = sorted(history_fallback, key=lambda x: x.get("timestamp", ""), reverse=True)
+            
+        return jsonify(records), 200
+    except Exception as e:
+        print(f"Error retrieving history: {e}")
+        return jsonify({"error": f"Failed to retrieve history: {str(e)}"}), 500
+
 @app.before_request
 def log_request():
-    print(f"[{request.method}] {request.path} from {request.remote_addr}")
+    try:
+        print(f"[{request.method}] {request.path} from {request.remote_addr}")
+    except Exception:
+        pass
 
 # ========== Run Flask App ==========
 if __name__ == '__main__':
-    print("🚀 Starting Brain Tumor Classifier API...")
+    print("[INFO] Starting Brain Tumor Classifier API...")
     print(f"Model path: {MODEL_PATH}")
     print(f"Model file exists: {os.path.exists(MODEL_PATH)}")
     app.run(debug=True, host='0.0.0.0', port=5000)

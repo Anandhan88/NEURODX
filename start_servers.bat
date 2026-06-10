@@ -1,20 +1,18 @@
 @echo off
-echo Starting Brain Tumor Detection App...
+echo Starting Brain Tumor Detection App (Combined Server Mode)...
 echo.
 
-echo Starting Backend Server...
-cd backend
-start "Backend Server" cmd /k "python app.py"
+echo [1/2] Building React Frontend static assets...
+cd frontend
+call npm run build
+if %errorlevel% neq 0 (
+    echo.
+    echo ❌ [ERROR] Frontend compilation failed! Please verify dependencies are installed by running "npm install" in the frontend directory.
+    pause
+    exit /b %errorlevel%
+)
 
 echo.
-echo Starting Frontend Server...
-cd ../frontend
-start "Frontend Server" cmd /k "npm start"
-
-echo.
-echo Both servers are starting...
-echo Backend: http://localhost:5000
-echo Frontend: http://localhost:3000
-echo.
-echo Press any key to exit this window...
-pause > nul 
+echo [2/2] Launching Backend Server on http://localhost:5000...
+cd ../backend
+venv\Scripts\python.exe app.py

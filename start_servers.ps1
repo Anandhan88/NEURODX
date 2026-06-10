@@ -1,19 +1,17 @@
-Write-Host "Starting Brain Tumor Detection App..." -ForegroundColor Green
+Write-Host "Starting Brain Tumor Detection App (Combined Server Mode)..." -ForegroundColor Green
 Write-Host ""
 
-Write-Host "Starting Backend Server..." -ForegroundColor Yellow
-Set-Location "backend"
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "python app.py" -WindowStyle Normal
+Write-Host "[1/2] Building React Frontend static assets..." -ForegroundColor Yellow
+Set-Location "frontend"
+npm run build
+if ($LASTEXITCODE -ne 0) {
+    Write-Host ""
+    Write-Host "❌ [ERROR] Frontend compilation failed! Please verify dependencies are installed by running 'npm install' in the frontend directory." -ForegroundColor Red
+    Read-Host "Press Enter to exit..."
+    Exit $LASTEXITCODE
+}
 
 Write-Host ""
-Write-Host "Starting Frontend Server..." -ForegroundColor Yellow
-Set-Location "../frontend"
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "npm start" -WindowStyle Normal
-
-Write-Host ""
-Write-Host "Both servers are starting..." -ForegroundColor Green
-Write-Host "Backend: http://localhost:5000" -ForegroundColor Cyan
-Write-Host "Frontend: http://localhost:3000" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "Press any key to exit..." -ForegroundColor Gray
-$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") 
+Write-Host "[2/2] Launching Backend Server on http://localhost:5000..." -ForegroundColor Yellow
+Set-Location "../backend"
+.\venv\Scripts\python.exe app.py
