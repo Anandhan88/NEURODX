@@ -38,7 +38,7 @@
 
 .form-group input, .form-group textarea {
   padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(0, 0, 0, 0.02);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 0.9rem;
@@ -48,7 +48,7 @@
 
 .form-group input:focus, .form-group textarea:focus {
   border-color: var(--accent-cyan);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(0, 0, 0, 0.03);
   outline: none;
 }
 
@@ -64,7 +64,7 @@
   border-radius: 10px;
   padding: 2rem 1.5rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(0, 0, 0, 0.01);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -126,7 +126,7 @@
   object-fit: cover;
   border-radius: 12px;
   border: 1px solid var(--border-color);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
   margin-bottom: 1rem;
 }
 
@@ -185,7 +185,7 @@
 
 /* Result box */
 .result-card {
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(0, 0, 0, 0.02);
   border: 1px solid var(--border-color);
   padding: 1.5rem;
   border-radius: 12px;
@@ -221,7 +221,7 @@
   line-height: 1.4;
   margin-top: 10px;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(0, 0, 0, 0.02);
   border-radius: 6px;
   border-left: 3px solid var(--text-muted);
 }

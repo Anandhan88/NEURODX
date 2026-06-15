@@ -1,26 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg-primary: #05080e;
-  --bg-secondary: #0a111a;
-  --bg-tertiary: #121d2a;
+  --bg-primary: #f8fafb;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #eef2f6;
   
   --accent-cyan: #10b981;
   --accent-blue: #059669;
   --accent-indigo: #34d399;
   --accent-purple: #0f766e;
   
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
   
-  --border-color: rgba(255, 255, 255, 0.06);
+  --border-color: rgba(0, 0, 0, 0.08);
   --border-focus: #10b981;
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-glow: 0 0 15px rgba(16, 185, 129, 0.15);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 15px rgba(16, 185, 129, 0.12);
   
   --font-sans: 'Inter', sans-serif;
   --font-display: 'Outfit', sans-serif;
@@ -72,7 +72,7 @@ p {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -144,7 +144,7 @@ select:focus-visible {
 }
 
 .glass-panel {
-  background: rgba(10, 17, 26, 0.75);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border-color);
 }

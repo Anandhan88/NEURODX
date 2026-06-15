@@ -72,7 +72,7 @@
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.03);
   color: var(--text-primary);
 }
 
@@ -271,7 +271,7 @@
   align-items: center;
   padding: 12px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(0, 0, 0, 0.02);
   border: 1px solid var(--border-color);
 }
 
