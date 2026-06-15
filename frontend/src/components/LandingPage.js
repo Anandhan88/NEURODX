@@ -1,7 +1,7 @@
 import React from 'react';
 import { FiActivity, FiCpu, FiFileText, FiArrowRight } from 'react-icons/fi';
 import logoImage from '../assets/logo.png';
-import bgImage from '../assets/medical_bg.webp';
+import bgImage from '../assets/medical_bg.png';
 import './LandingPage.css';
 
 const LandingPage = ({ onEnterPortal }) => {
