@@ -1,10 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiActivity, FiCpu, FiFileText, FiArrowRight } from 'react-icons/fi';
 import logoImage from '../assets/logo.png';
 
 import './LandingPage.css';
 
+const rotatingPhrases = [
+  'Detecting Glioma Tumors',
+  'Classifying Meningioma',
+  'Analyzing MRI Scans',
+  'Mapping Pituitary Adenomas',
+  'Powering Clinical Decisions',
+  'Visualizing Neural Pathways',
+  '96.2% Diagnostic Accuracy',
+];
+
 const LandingPage = ({ onEnterPortal }) => {
+  const [currentPhrase, setCurrentPhrase] = useState(0);
+  const [displayText, setDisplayText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const phrase = rotatingPhrases[currentPhrase];
+    let timeout;
+
+    if (!isDeleting) {
+      // Typing
+      if (displayText.length < phrase.length) {
+        timeout = setTimeout(() => {
+          setDisplayText(phrase.slice(0, displayText.length + 1));
+        }, 60);
+      } else {
+        // Pause before deleting
+        timeout = setTimeout(() => setIsDeleting(true), 2000);
+      }
+    } else {
+      // Deleting
+      if (displayText.length > 0) {
+        timeout = setTimeout(() => {
+          setDisplayText(displayText.slice(0, -1));
+        }, 35);
+      } else {
+        setIsDeleting(false);
+        setCurrentPhrase((prev) => (prev + 1) % rotatingPhrases.length);
+      }
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayText, isDeleting, currentPhrase]);
+
   const scrollToFeatures = () => {
     const el = document.getElementById('features-section');
     if (el) {
@@ -29,15 +72,21 @@ const LandingPage = ({ onEnterPortal }) => {
         </button>
       </header>
 
-      {/* SECTION 1: HERO FOLD (NO BOX) */}
+      {/* SECTION 1: HERO FOLD */}
       <main className="landing-hero-fold">
-        <h1>FUZZY DEEP LEARNING NEURO-ONCOLOGY PORTAL</h1>
+        <h1 className="hero-title-animated">FUZZY DEEP LEARNING NEURO-ONCOLOGY PORTAL</h1>
         
-        <p className="subtitle">
+        <div className="typewriter-container">
+          <span className="typewriter-prefix">Currently </span>
+          <span className="typewriter-text">{displayText}</span>
+          <span className="typewriter-cursor">|</span>
+        </div>
+
+        <p className="subtitle hero-subtitle-animated">
           Next-generation clinical decision-support space for medical professionals. Run automated brain MRI analysis with high-accuracy classification and 3D spatial visualization.
         </p>
 
-        <div style={{ marginTop: '0.5rem' }}>
+        <div className="hero-cta-animated" style={{ marginTop: '0.5rem' }}>
           <button className="cta-btn" onClick={onEnterPortal}>
             Enter Clinical Portal
             <FiArrowRight />
