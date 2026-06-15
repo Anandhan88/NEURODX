@@ -17,7 +17,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.55) 0%, rgba(240, 245, 250, 0.85) 100%);
+  background: radial-gradient(circle at 35% 35%, rgba(5, 8, 14, 0.65) 0%, rgba(5, 8, 14, 0.94) 100%);
   z-index: 1;
 }
 
@@ -29,9 +29,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 3rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(5, 8, 14, 0.85);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .landing-logo {
@@ -91,20 +91,20 @@
   font-weight: 800;
   font-family: var(--font-display);
   line-height: 1.15;
-  background: linear-gradient(135deg, #1a2a3a 30%, #0e7c6b 100%);
+  background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent-cyan) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   max-width: 950px;
-  text-shadow: none;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
   margin-bottom: 1.5rem;
 }
 
 .landing-hero-fold p.subtitle {
   font-size: 1.25rem;
-  color: #3a4a5c;
+  color: var(--text-secondary);
   max-width: 720px;
   line-height: 1.65;
-  text-shadow: none;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
   margin-bottom: 2.5rem;
 }
 
@@ -115,7 +115,7 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: #6b7a8d;
+  color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 500;
   animation: bounce 2s infinite;
@@ -138,14 +138,14 @@
 }
 
 .section-dark {
-  background: rgba(240, 245, 250, 0.95);
+  background: rgba(5, 8, 14, 0.8);
   backdrop-filter: blur(8px);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--border-color);
 }
 
 .section-darker {
-  background: rgba(230, 238, 245, 0.97);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(4, 6, 10, 0.95);
+  border-top: 1px solid var(--border-color);
 }
 
 .section-header-centered {
@@ -156,7 +156,7 @@
 
 .section-header-centered h2 {
   font-size: 2rem;
-  color: #1a2a3a;
+
   font-weight: 800;
   font-family: var(--font-display);
   margin-bottom: 10px;
@@ -164,7 +164,7 @@
 
 .section-header-centered p {
   font-size: 1rem;
-  color: #4a5a6c;
+  color: var(--text-secondary);
 }
 
 .features-grid-vertical {
@@ -183,8 +183,8 @@
 }
 
 .feature-large-card {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(10, 17, 26, 0.7);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 2.25rem 2rem;
   transition: all 0.3s ease;
@@ -194,8 +194,8 @@
 }
 
 .feature-large-card:hover {
-  border-color: rgba(16, 185, 129, 0.4);
-  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(10, 17, 26, 0.85);
   transform: translateY(-4px);
   box-shadow: var(--shadow-glow);
 }
@@ -215,13 +215,13 @@
 .feature-large-card h3 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1a2a3a;
+  color: var(--text-primary);
   font-family: var(--font-display);
 }
 
 .feature-large-card p {
   font-size: 0.9rem;
-  color: #4a5a6c;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
@@ -235,7 +235,7 @@
 
 .feature-bullet-list li {
   font-size: 0.8rem;
-  color: #5a6a7c;
+  color: var(--text-muted);
   position: relative;
   padding-left: 18px;
 }
@@ -266,8 +266,8 @@
 
 .step-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(10, 17, 26, 0.5);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 2rem;
   display: flex;
@@ -296,12 +296,12 @@
   font-size: 1.15rem;
   font-weight: 600;
   margin-top: 10px;
-  color: #1a2a3a;
+  color: var(--text-primary);
 }
 
 .step-card p {
   font-size: 0.85rem;
-  color: #4a5a6c;
+  color: var(--text-secondary);
   line-height: 1.65;
 }
 
@@ -310,7 +310,7 @@
   max-width: 800px;
   margin: 4rem auto 0 auto;
   text-align: center;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--border-color);
   padding-top: 3rem;
 }
 
@@ -348,6 +348,6 @@
   text-align: center;
   padding: 1.5rem;
   font-size: 0.8rem;
-  color: #6b7a8d;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
