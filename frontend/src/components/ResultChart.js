@@ -23,12 +23,22 @@ function ResultChart({ result }) {
   const confidence = result.confidence;
   const chartsRef = useRef(null);
 
-  const pieData = [
+  const pieData = result.probabilities ? [
+    { name: 'Glioma', value: result.probabilities['Glioma'] || 0 },
+    { name: 'Meningioma', value: result.probabilities['Meningioma'] || 0 },
+    { name: 'No Tumor', value: result.probabilities['No Tumor'] || 0 },
+    { name: 'Pituitary', value: result.probabilities['Pituitary'] || 0 },
+  ].filter(item => item.value > 0) : [
     { name: label, value: confidence },
     { name: 'Other', value: parseFloat((100 - confidence).toFixed(2)) },
   ];
 
-  const barData = [
+  const barData = result.probabilities ? [
+    { name: 'Glioma', value: result.probabilities['Glioma'] || 0 },
+    { name: 'Meningioma', value: result.probabilities['Meningioma'] || 0 },
+    { name: 'No Tumor', value: result.probabilities['No Tumor'] || 0 },
+    { name: 'Pituitary', value: result.probabilities['Pituitary'] || 0 },
+  ] : [
     { name: 'Glioma', value: label === 'Glioma' ? confidence : 0 },
     { name: 'Meningioma', value: label === 'Meningioma' ? confidence : 0 },
     { name: 'No Tumor', value: label === 'No Tumor' ? confidence : 0 },
@@ -199,7 +209,14 @@ function ResultChart({ result }) {
       </div>
 
       <div style={{ marginTop: '2rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
-        <PDFReport result={result} chartsRef={chartsRef} />
+        <PDFReport 
+          result={result} 
+          chartsRef={chartsRef} 
+          patientName={result.patientName}
+          patientId={result.patientId}
+          patientAge={result.patientAge}
+          doctorNotes={result.doctorNotes}
+        />
       </div>
     </div>
   );

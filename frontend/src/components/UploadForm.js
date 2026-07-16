@@ -69,7 +69,13 @@ function UploadForm({ onResult }) {
       await logScanToDatabase(response.data.class, response.data.confidence);
       
       // Trigger parent callback
-      onResult(response.data);
+      onResult({
+        ...response.data,
+        patientName,
+        patientId,
+        patientAge,
+        doctorNotes
+      });
     } catch (err) {
       console.error('Scan prediction error:', err);
       setError(err.response?.data?.error || "Analysis failed. Please verify the image file and check server logs.");

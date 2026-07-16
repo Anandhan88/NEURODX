@@ -50,6 +50,8 @@ try:
     print("[OK] MongoDB connection successful!")
 except Exception as e:
     print("[ERROR] MongoDB connection failed:", e)
+    users_collection = None
+    history_collection = None
 
 # ========== Load Brain Tumor Classifier Model ==========
 try:
@@ -68,7 +70,7 @@ class_labels = ['Glioma', 'Meningioma', 'No Tumor', 'Pituitary']
 def preprocess_image(img):
     try:
         img = img.resize((150, 150))
-        img_array = image.img_to_array(img) / 255.0
+        img_array = image.img_to_array(img)
         img_array = np.expand_dims(img_array, axis=0)
         return img_array
     except Exception as e:
@@ -159,15 +161,24 @@ def predict():
         class_index = np.argmax(prediction)
         confidence = float(np.max(prediction))
 
+        probabilities = {
+            class_labels[i]: round(float(prediction[0][i]) * 100, 2)
+            for i in range(len(class_labels))
+        }
+
+        # Add logging for prediction requests
+        print(f"[PREDICT] Classified image. Outcome: {class_labels[class_index]} ({round(confidence * 100, 2)}% confidence)")
+
         return jsonify({
             'result': f"{class_labels[class_index]} ({round(confidence * 100, 2)}% confidence)",
             'class': class_labels[class_index],
-            'confidence': round(confidence * 100, 2)
+            'confidence': round(confidence * 100, 2),
+            'probabilities': probabilities
         })
 
     except Exception as e:
-        print(f"Error in prediction: {e}")
-        print(f"Traceback: {traceback.format_exc()}")
+        print(f"[ERROR] Error in prediction: {e}")
+        print(f"[ERROR] Traceback: {traceback.format_exc()}")
         return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
 
 from datetime import datetime

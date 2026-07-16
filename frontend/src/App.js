@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+// Configure API baseURL for Vercel/Render separate deployment
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || '';
 import logoImage from './assets/logo.png';
 import LandingPage from './components/LandingPage';
 import UploadForm from './components/UploadForm';

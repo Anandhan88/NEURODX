@@ -12,7 +12,6 @@ def preprocess_image(img):
         
         # Convert to array and normalize
         img_array = image.img_to_array(img)
-        img_array = img_array / 255.0
         
         # Add batch dimension
         img_array = np.expand_dims(img_array, axis=0)
@@ -38,7 +37,7 @@ def test_model():
         # Load model
         print("Loading model...")
         model = load_model(model_path)
-        print("✅ Model loaded successfully!")
+        print("[OK] Model loaded successfully!")
         
         # Create a dummy image for testing
         print("Creating test image...")
@@ -57,14 +56,14 @@ def test_model():
         confidence = float(np.max(prediction))
         
         class_labels = ['Glioma', 'Meningioma', 'No Tumor', 'Pituitary']
-        print(f"✅ Prediction successful!")
+        print(f"[OK] Prediction successful!")
         print(f"Predicted class: {class_labels[class_index]}")
         print(f"Confidence: {confidence * 100:.2f}%")
         
         return True
         
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"[ERROR] Error: {e}")
         import traceback
         print(f"Traceback: {traceback.format_exc()}")
         return False
