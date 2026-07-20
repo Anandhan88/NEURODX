@@ -1,0 +1,165 @@
+/* ============================================================
+   NeuroDX AI — AI Insights Layout
+   ============================================================ */
+
+.ndx-insights-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Hero Section */
+.ndx-insight-hero {
+  display: flex;
+  gap: 20px;
+  padding: 24px;
+  align-items: center;
+  background: linear-gradient(165deg, var(--primary-50) 0%, rgba(255,255,255,0.8) 100%);
+  border-left: 4px solid var(--primary);
+}
+
+@media (max-width: 640px) {
+  .ndx-insight-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+.ndx-hero-icon-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--primary-100);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ndx-hero-text h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.ndx-hero-text p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Grid Layout */
+.ndx-insights-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .ndx-insights-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ndx-full-row-card {
+  grid-column: 1 / -1;
+}
+
+.ndx-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 10px;
+}
+
+.ndx-card-title-row h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.insight-blue { color: var(--primary); }
+.insight-green { color: var(--secondary); }
+.insight-warning { color: var(--warning); }
+
+.ndx-insight-p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.ndx-insight-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ndx-insight-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.ndx-insight-list li svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.ndx-pathology-item {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.ndx-pathology-item strong {
+  color: var(--text-primary);
+  margin-right: 4px;
+}
+
+.ndx-trust-bullets {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ndx-trust-bullet {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.ndx-trust-bullet svg {
+  color: var(--primary);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.ndx-trust-bullet div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ndx-trust-bullet strong {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.ndx-trust-bullet span {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}

@@ -1,30 +1,182 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import axios from 'axios';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ArrowLeft,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Building2,
+  Phone,
+  User,
+  ShieldCheck,
+  Brain,
+  ScanLine,
+  Activity,
+  CheckCircle2,
+  AlertCircle,
+  ChevronDown,
+  LogIn,
+  UserPlus,
+  FileText,
+  Dna,
+  Heart,
+  Stethoscope
+} from 'lucide-react';
+import BrainLogo from './BrainLogo';
 import './Auth.css';
-import img2 from '../assets/img2.png';
-import { FiArrowLeft, FiLock, FiPhone, FiHome } from 'react-icons/fi';
 
+/* ---- Animation variants ---- */
+const pageVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.4, staggerChildren: 0.08 } },
+  exit: { opacity: 0, transition: { duration: 0.2 } }
+};
+
+const leftPanelVariants = {
+  initial: { opacity: 0, x: -30 },
+  animate: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }
+};
+
+const rightPanelVariants = {
+  initial: { opacity: 0, x: 30 },
+  animate: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.1 } }
+};
+
+const itemVariants = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] } }
+};
+
+const featureVariants = {
+  initial: { opacity: 0, x: -16 },
+  animate: (i) => ({
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: 0.3 + i * 0.1 }
+  })
+};
+
+/* ---- Password strength calculator ---- */
+function getPasswordStrength(password) {
+  if (!password) return { level: 0, label: '', class: '' };
+  let score = 0;
+  if (password.length >= 6) score++;
+  if (password.length >= 10) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+
+  if (score <= 1) return { level: 1, label: 'Weak', class: 'weak' };
+  if (score === 2) return { level: 2, label: 'Fair', class: 'fair' };
+  if (score === 3) return { level: 3, label: 'Good', class: 'good' };
+  return { level: 4, label: 'Strong', class: 'strong' };
+}
+
+/* ---- Feature data ---- */
+const features = [
+  {
+    icon: <ShieldCheck size={18} />,
+    colorClass: 'green',
+    title: 'Secure Hospital Login',
+    desc: 'End-to-end encrypted clinical access'
+  },
+  {
+    icon: <Brain size={18} />,
+    colorClass: 'blue',
+    title: 'AI Tumor Classification',
+    desc: 'CNN-powered multi-class detection'
+  },
+  {
+    icon: <ScanLine size={18} />,
+    colorClass: 'teal',
+    title: 'Accurate MRI Analysis',
+    desc: '96%+ classification accuracy'
+  }
+];
+
+/* ---- Department options ---- */
+const departments = [
+  'Radiology',
+  'Neurology',
+  'Neurosurgery',
+  'General Hospital'
+];
+
+/* ============================================================
+   HospitalAuth Component
+   ============================================================ */
 function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [hospitalName, setHospitalName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  /* ---- Form state ---- */
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  /* Login fields */
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  /* Registration fields */
+  const [hospitalName, setHospitalName] = useState('');
+  const [doctorName, setDoctorName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [department, setDepartment] = useState('');
+  const [medRegNumber, setMedRegNumber] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+
+  /* Validation */
+  const [touched, setTouched] = useState({});
+
+  const passwordStrength = useMemo(() => getPasswordStrength(password), [password]);
+
+  const passwordsMatch = confirmPassword && password === confirmPassword;
+  const passwordsMismatch = confirmPassword && password !== confirmPassword;
+
+  /* ---- Handlers ---- */
+  const markTouched = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const switchMode = () => {
+    setIsLogin(!isLogin);
+    setError('');
+    setMessage('');
+    setSuccess(false);
+    setTouched({});
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setMessage('');
-    
+    setSuccess(false);
+
+    /* Registration validation */
+    if (!isLogin) {
+      if (password !== confirmPassword) {
+        setError('Passwords do not match.');
+        setLoading(false);
+        return;
+      }
+      if (!acceptTerms) {
+        setError('Please accept the terms and conditions.');
+        setLoading(false);
+        return;
+      }
+    }
+
     const endpoint = isLogin ? 'login' : 'signup';
-    const payload = {
-      email: email,
-      password: password,
-    };
+    const payload = { email, password };
 
     if (!isLogin) {
       payload.hospital_name = hospitalName;
@@ -33,154 +185,567 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
 
     try {
       const res = await axios.post(`/${endpoint}`, payload);
-
       if (res.status === 200) {
         if (isLogin) {
-          onAuthSuccess(email);
+          setSuccess(true);
+          setTimeout(() => onAuthSuccess(email), 800);
         } else {
-          setMessage('Client registered! Please log in.');
-          setIsLogin(true);
-          setHospitalName('');
-          setPhoneNumber('');
-          setPassword('');
+          setMessage('Account created successfully! Please log in.');
+          setSuccess(true);
+          setTimeout(() => {
+            setIsLogin(true);
+            setHospitalName('');
+            setDoctorName('');
+            setPhoneNumber('');
+            setDepartment('');
+            setMedRegNumber('');
+            setPassword('');
+            setConfirmPassword('');
+            setAcceptTerms(false);
+            setSuccess(false);
+            setTouched({});
+          }, 1200);
         }
       }
     } catch (err) {
-      setError(err.response?.data?.error || `${isLogin ? 'Login' : 'Signup'} failed. Please check credentials.`);
+      setError(
+        err.response?.data?.error ||
+        `${isLogin ? 'Login' : 'Registration'} failed. Please check your credentials.`
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  /* ---- Render ---- */
   return (
-    <div className="auth-wrapper">
-      <div className="auth-content">
-        
-        {/* Left Side: Brand Visual Card */}
-        <div className="auth-image">
-          <button 
-            onClick={onBackToLanding}
-            style={{
-              position: 'absolute',
-              top: '20px',
-              left: '20px',
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--text-secondary)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '0.85rem',
-              fontWeight: 500,
-              zIndex: 3
-            }}
-          >
-            <FiArrowLeft /> Back to Home
-          </button>
-
-          <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', width: '100%', marginTop: '20px' }}>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem', fontFamily: 'var(--font-display)' }}>
-              NEURO<span style={{ color: 'var(--accent-cyan)' }}>DX</span>
-            </h1>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-              Secure Clinical Entry Portal
-            </p>
-          </div>
-          
-          <img src={img2} alt="AI Diagnostics Logo" style={{ marginTop: '2rem', maxHeight: '160px', opacity: 0.85 }} />
-        </div>
-
-        {/* Right Side: Form Card */}
-        <div className="auth-card">
-          <h2>{isLogin ? 'Client Portal Login' : 'Register Client'}</h2>
-          
-          <form onSubmit={handleSubmit} className="auth-form">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label htmlFor="email">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="e.g. admin@client.com"
-                required
-                disabled={loading}
-              />
-            </div>
-
-            {!isLogin && (
-              <>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label htmlFor="hospitalName">Hospital / Clinic Name</label>
-                  <input
-                    type="text"
-                    id="hospitalName"
-                    value={hospitalName}
-                    onChange={(e) => setHospitalName(e.target.value)}
-                    placeholder="e.g. St. Mary Neurology Clinic"
-                    required
-                    disabled={loading}
-                  />
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label htmlFor="phoneNumber">Client Phone Number</label>
-                  <input
-                    type="tel"
-                    id="phoneNumber"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="e.g. +1 (555) 019-2834"
-                    required
-                    disabled={loading}
-                  />
-                </div>
-              </>
-            )}
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label htmlFor="password">Security Password</label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
-                required
-                disabled={loading}
-              />
-            </div>
-
-            <button type="submit" disabled={loading}>
-              {loading ? 'Verifying Credentials...' : isLogin ? 'Access Portal' : 'Register Client'}
-            </button>
-
-            {message && <p className="success-msg">{message}</p>}
-            {error && <p className="error-msg">{error}</p>}
-          </form>
-
-          <div className="switch-auth">
-            {isLogin ? (
-              <>
-                Client not registered?{' '}
-                <span onClick={() => { setIsLogin(false); setError(''); setMessage(''); }}>
-                  Register here
-                </span>
-              </>
-            ) : (
-              <>
-                Client already registered?{' '}
-                <span onClick={() => { setIsLogin(true); setError(''); setMessage(''); }}>
-                  Login here
-                </span>
-              </>
-            )}
-          </div>
-        </div>
-
+    <motion.div
+      className="auth-wrapper"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
+      {/* Background floating medical icons */}
+      <div className="auth-floating-elements" aria-hidden="true">
+        <div className="auth-floating-el"><Brain size={32} /></div>
+        <div className="auth-floating-el"><Dna size={28} /></div>
+        <div className="auth-floating-el"><Activity size={24} /></div>
+        <div className="auth-floating-el"><Heart size={22} /></div>
+        <div className="auth-floating-el"><Stethoscope size={26} /></div>
       </div>
-    </div>
+
+      {/* Background pattern */}
+      <div className="auth-bg-pattern" aria-hidden="true">
+        <svg className="bg-grid" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="authGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#0F4C81" strokeWidth="0.5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#authGrid)" />
+        </svg>
+      </div>
+
+      {/* ---- Main Card ---- */}
+      <div className="auth-content">
+
+        {/* ==== LEFT PANEL — Hero ==== */}
+        <motion.div className="auth-hero-panel" variants={leftPanelVariants}>
+          {/* Back button */}
+          <motion.button
+            className="auth-back-btn"
+            onClick={onBackToLanding}
+            whileHover={{ x: -3 }}
+            whileTap={{ scale: 0.97 }}
+            aria-label="Back to home"
+          >
+            <ArrowLeft size={15} /> Back
+          </motion.button>
+
+          {/* Branding */}
+          <motion.div className="auth-branding" variants={itemVariants}>
+            <BrainLogo size={50} />
+            <div className="auth-brand-text">
+              <h1>Brain Tumor Detection</h1>
+              <p>AI Powered MRI Analysis Platform</p>
+            </div>
+          </motion.div>
+
+          {/* Headline */}
+          <motion.div className="auth-hero-headline" variants={itemVariants}>
+            <h2>
+              Early Detection{' '}
+              <span className="highlight">Saves Lives</span>
+            </h2>
+          </motion.div>
+
+          <motion.p className="auth-hero-description" variants={itemVariants}>
+            Upload MRI scans and receive AI-assisted brain tumor predictions
+            within seconds. Trusted by hospitals and radiologists worldwide.
+          </motion.p>
+
+          {/* Feature cards */}
+          <div className="auth-features">
+            {features.map((f, i) => (
+              <motion.div
+                key={f.title}
+                className="auth-feature-card"
+                custom={i}
+                variants={featureVariants}
+                initial="initial"
+                animate="animate"
+                whileHover={{ x: 4 }}
+              >
+                <div className={`auth-feature-icon ${f.colorClass}`}>{f.icon}</div>
+                <div>
+                  <h4>{f.title}</h4>
+                  <p>{f.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* ==== RIGHT PANEL — Form ==== */}
+        <motion.div className="auth-form-panel" variants={rightPanelVariants}>
+
+          {/* Mobile-only branding */}
+          <div className="auth-mobile-brand">
+            <BrainLogo size={40} />
+            <div className="auth-brand-text">
+              <h1 style={{ fontSize: '1rem' }}>Brain Tumor Detection</h1>
+              <p style={{ fontSize: '0.65rem' }}>AI Powered MRI Analysis</p>
+            </div>
+          </div>
+
+          {/* Form header */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={isLogin ? 'login-header' : 'reg-header'}
+              className="auth-form-header"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+            >
+              <h2>{isLogin ? 'Welcome Back' : 'Hospital Registration'}</h2>
+              <p>
+                {isLogin
+                  ? 'Sign in to continue your medical analysis dashboard.'
+                  : 'Create your hospital account to access AI diagnostics.'}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Status messages */}
+          <AnimatePresence>
+            {message && (
+              <motion.div
+                className="auth-msg success"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+              >
+                <CheckCircle2 size={16} /> {message}
+              </motion.div>
+            )}
+            {error && (
+              <motion.div
+                className="auth-msg error"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+              >
+                <AlertCircle size={16} /> {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ---- FORM ---- */}
+          <AnimatePresence mode="wait">
+            <motion.form
+              key={isLogin ? 'login-form' : 'register-form'}
+              className="auth-form"
+              onSubmit={handleSubmit}
+              initial={{ opacity: 0, x: isLogin ? -20 : 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: isLogin ? 20 : -20 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {/* ---- LOGIN FORM ---- */}
+              {isLogin ? (
+                <>
+                  {/* Email */}
+                  <div className="auth-input-group">
+                    <div className="auth-input-wrapper">
+                      <span className="auth-input-icon"><Mail size={17} /></span>
+                      <input
+                        type="email"
+                        id="login-email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="email"
+                        required
+                        disabled={loading}
+                        autoComplete="email"
+                        aria-label="Email Address"
+                      />
+                      <label htmlFor="login-email" className="auth-input-label">Email Address</label>
+                    </div>
+                  </div>
+
+                  {/* Password */}
+                  <div className="auth-input-group">
+                    <div className="auth-input-wrapper">
+                      <span className="auth-input-icon"><Lock size={17} /></span>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        id="login-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="password"
+                        required
+                        disabled={loading}
+                        autoComplete="current-password"
+                        aria-label="Password"
+                      />
+                      <label htmlFor="login-password" className="auth-input-label">Password</label>
+                      <button
+                        type="button"
+                        className="auth-password-toggle"
+                        onClick={() => setShowPassword(!showPassword)}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        tabIndex={-1}
+                      >
+                        {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Remember me + Forgot */}
+                  <div className="auth-options-row">
+                    <label className="auth-remember-me">
+                      <input
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        aria-label="Remember me"
+                      />
+                      Remember me
+                    </label>
+                    <button type="button" className="auth-forgot-link">Forgot Password?</button>
+                  </div>
+
+                  {/* Submit */}
+                  <motion.button
+                    type="submit"
+                    className="auth-submit-btn"
+                    disabled={loading || success}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {loading ? (
+                      <div className="auth-spinner" />
+                    ) : success ? (
+                      <>
+                        <CheckCircle2 size={18} />
+                        <span>Authenticated</span>
+                      </>
+                    ) : (
+                      <>
+                        <LogIn size={18} />
+                        <span>Sign In</span>
+                      </>
+                    )}
+                  </motion.button>
+
+                  {/* Divider */}
+                  <div className="auth-divider">
+                    <div className="auth-divider-line" />
+                    <span className="auth-divider-text">OR</span>
+                    <div className="auth-divider-line" />
+                  </div>
+
+                  {/* Switch to register */}
+                  <div className="auth-switch-mode">
+                    Don't have an account?
+                    <button type="button" className="auth-switch-link" onClick={switchMode}>
+                      Create Hospital Account
+                    </button>
+                  </div>
+                </>
+              ) : (
+                /* ---- REGISTRATION FORM ---- */
+                <>
+                  {/* Hospital Name + Doctor Name row */}
+                  <div className="auth-form-row">
+                    <div className="auth-input-group">
+                      <div className="auth-input-wrapper">
+                        <span className="auth-input-icon"><Building2 size={17} /></span>
+                        <input
+                          type="text"
+                          id="reg-hospital"
+                          value={hospitalName}
+                          onChange={(e) => setHospitalName(e.target.value)}
+                          placeholder="hospital"
+                          required
+                          disabled={loading}
+                          aria-label="Hospital or Clinic Name"
+                        />
+                        <label htmlFor="reg-hospital" className="auth-input-label">Hospital / Clinic Name</label>
+                      </div>
+                    </div>
+
+                    <div className="auth-input-group">
+                      <div className="auth-input-wrapper">
+                        <span className="auth-input-icon"><User size={17} /></span>
+                        <input
+                          type="text"
+                          id="reg-doctor"
+                          value={doctorName}
+                          onChange={(e) => setDoctorName(e.target.value)}
+                          placeholder="doctor"
+                          required
+                          disabled={loading}
+                          aria-label="Doctor Name"
+                        />
+                        <label htmlFor="reg-doctor" className="auth-input-label">Doctor Name</label>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Email */}
+                  <div className="auth-input-group">
+                    <div className="auth-input-wrapper">
+                      <span className="auth-input-icon"><Mail size={17} /></span>
+                      <input
+                        type="email"
+                        id="reg-email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="email"
+                        required
+                        disabled={loading}
+                        autoComplete="email"
+                        aria-label="Official Email Address"
+                      />
+                      <label htmlFor="reg-email" className="auth-input-label">Official Email Address</label>
+                    </div>
+                  </div>
+
+                  {/* Phone + Department row */}
+                  <div className="auth-form-row">
+                    <div className="auth-input-group">
+                      <div className="auth-input-wrapper">
+                        <span className="auth-input-icon"><Phone size={17} /></span>
+                        <input
+                          type="tel"
+                          id="reg-phone"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          placeholder="phone"
+                          required
+                          disabled={loading}
+                          aria-label="Phone Number"
+                        />
+                        <label htmlFor="reg-phone" className="auth-input-label">Phone Number</label>
+                      </div>
+                    </div>
+
+                    <div className="auth-input-group">
+                      <div className={`auth-input-wrapper ${department ? 'has-value' : ''}`}>
+                        <span className="auth-input-icon"><Activity size={17} /></span>
+                        <select
+                          id="reg-department"
+                          value={department}
+                          onChange={(e) => setDepartment(e.target.value)}
+                          required
+                          disabled={loading}
+                          aria-label="Department"
+                        >
+                          <option value="">Select department</option>
+                          {departments.map((d) => (
+                            <option key={d} value={d}>{d}</option>
+                          ))}
+                        </select>
+                        <label htmlFor="reg-department" className="auth-input-label">Department</label>
+                        <span className="auth-select-arrow"><ChevronDown size={16} /></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Medical Registration Number (optional) */}
+                  <div className="auth-input-group">
+                    <div className="auth-input-wrapper">
+                      <span className="auth-input-icon"><FileText size={17} /></span>
+                      <input
+                        type="text"
+                        id="reg-medreg"
+                        value={medRegNumber}
+                        onChange={(e) => setMedRegNumber(e.target.value)}
+                        placeholder="medreg"
+                        disabled={loading}
+                        aria-label="Medical Registration Number (Optional)"
+                      />
+                      <label htmlFor="reg-medreg" className="auth-input-label">Medical Reg. Number (Optional)</label>
+                    </div>
+                  </div>
+
+                  {/* Password + Confirm row */}
+                  <div className="auth-form-row">
+                    <div className="auth-input-group">
+                      <div className="auth-input-wrapper">
+                        <span className="auth-input-icon"><Lock size={17} /></span>
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          id="reg-password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          onBlur={() => markTouched('password')}
+                          placeholder="password"
+                          required
+                          disabled={loading}
+                          autoComplete="new-password"
+                          aria-label="Password"
+                        />
+                        <label htmlFor="reg-password" className="auth-input-label">Password</label>
+                        <button
+                          type="button"
+                          className="auth-password-toggle"
+                          onClick={() => setShowPassword(!showPassword)}
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                          tabIndex={-1}
+                        >
+                          {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                        </button>
+                      </div>
+                      {/* Password strength meter */}
+                      {password && (
+                        <>
+                          <div className="auth-password-strength">
+                            {[1, 2, 3, 4].map((n) => (
+                              <div
+                                key={n}
+                                className={`auth-strength-bar ${n <= passwordStrength.level ? `active ${passwordStrength.class}` : ''}`}
+                              />
+                            ))}
+                          </div>
+                          <div className={`auth-strength-label ${passwordStrength.class}`}>
+                            {passwordStrength.label}
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    <div className={`auth-input-group ${passwordsMismatch && touched.confirmPassword ? 'error' : ''} ${passwordsMatch ? 'success' : ''}`}>
+                      <div className="auth-input-wrapper">
+                        <span className="auth-input-icon"><Lock size={17} /></span>
+                        <input
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          id="reg-confirm-password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          onBlur={() => markTouched('confirmPassword')}
+                          placeholder="confirm"
+                          required
+                          disabled={loading}
+                          autoComplete="new-password"
+                          aria-label="Confirm Password"
+                        />
+                        <label htmlFor="reg-confirm-password" className="auth-input-label">Confirm Password</label>
+                        <button
+                          type="button"
+                          className="auth-password-toggle"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                          tabIndex={-1}
+                        >
+                          {showConfirmPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                        </button>
+                      </div>
+                      {passwordsMatch && (
+                        <span className="auth-validation-msg success">
+                          <CheckCircle2 size={13} /> Passwords match
+                        </span>
+                      )}
+                      {passwordsMismatch && touched.confirmPassword && (
+                        <span className="auth-validation-msg error">
+                          <AlertCircle size={13} /> Passwords don't match
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Terms */}
+                  <label className="auth-terms-check">
+                    <input
+                      type="checkbox"
+                      checked={acceptTerms}
+                      onChange={(e) => setAcceptTerms(e.target.checked)}
+                      required
+                      aria-label="Accept terms and conditions"
+                    />
+                    <span>
+                      I agree to the{' '}
+                      <a href="#terms" onClick={(e) => e.preventDefault()}>Terms of Service</a>{' '}
+                      and{' '}
+                      <a href="#privacy" onClick={(e) => e.preventDefault()}>Privacy Policy</a>
+                    </span>
+                  </label>
+
+                  {/* Submit */}
+                  <motion.button
+                    type="submit"
+                    className="auth-submit-btn"
+                    disabled={loading || success}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {loading ? (
+                      <div className="auth-spinner" />
+                    ) : success ? (
+                      <>
+                        <CheckCircle2 size={18} />
+                        <span>Account Created</span>
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus size={18} />
+                        <span>Create Account</span>
+                      </>
+                    )}
+                  </motion.button>
+
+                  {/* Switch to login */}
+                  <div className="auth-switch-mode">
+                    Already have an account?
+                    <button type="button" className="auth-switch-link" onClick={switchMode}>
+                      Login here
+                    </button>
+                  </div>
+                </>
+              )}
+            </motion.form>
+          </AnimatePresence>
+
+          {/* Footer */}
+          <div className="auth-footer">
+            <a href="#privacy" onClick={(e) => e.preventDefault()}>Privacy Policy</a>
+            <span className="auth-footer-dot" />
+            <a href="#terms" onClick={(e) => e.preventDefault()}>Terms</a>
+            <span className="auth-footer-dot" />
+            <a href="#support" onClick={(e) => e.preventDefault()}>Support</a>
+            <span className="auth-footer-dot" />
+            <span>v1.0.0</span>
+            <div className="auth-copyright">
+              © 2026 Brain Tumor Detection AI. All rights reserved.
+            </div>
+          </div>
+
+        </motion.div>
+      </div>
+    </motion.div>
   );
 }
 

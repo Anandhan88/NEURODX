@@ -1,0 +1,194 @@
+/* ============================================================
+   NeuroDX AI — Sidebar
+   Premium floating navigation
+   ============================================================ */
+
+.ndx-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  overflow: hidden;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ndx-sidebar.collapsed {
+  width: 72px;
+}
+
+/* ---- Header ---- */
+.ndx-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border-light);
+  min-height: 64px;
+}
+
+.ndx-sidebar-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.ndx-sidebar-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--primary-200);
+}
+
+.ndx-sidebar.collapsed .ndx-sidebar-toggle {
+  display: none;
+}
+
+/* ---- Navigation ---- */
+.ndx-sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.ndx-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.ndx-nav-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.ndx-nav-item.active {
+  background: var(--primary-50);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.ndx-nav-item.active svg {
+  color: var(--primary);
+}
+
+/* Active bar indicator */
+.ndx-nav-active-bar {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  background: var(--primary);
+  border-radius: 0 3px 3px 0;
+}
+
+/* Icon sizing */
+.ndx-nav-item svg {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.ndx-nav-item:hover svg {
+  color: var(--text-secondary);
+}
+
+/* Collapsed state */
+.ndx-sidebar.collapsed .ndx-nav-item {
+  justify-content: center;
+  padding: 10px;
+}
+
+.ndx-sidebar.collapsed .ndx-nav-item span {
+  display: none;
+}
+
+/* ---- Footer ---- */
+.ndx-sidebar-footer {
+  padding: 8px 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ndx-sidebar-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 6px 4px;
+}
+
+.ndx-nav-subtle {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.ndx-nav-subtle:hover {
+  color: var(--text-secondary);
+}
+
+.ndx-nav-logout {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.ndx-nav-logout:hover {
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.ndx-nav-logout:hover svg {
+  color: var(--danger);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .ndx-sidebar {
+    width: 72px !important;
+  }
+  .ndx-sidebar .ndx-nav-item span {
+    display: none;
+  }
+  .ndx-sidebar .ndx-nav-item {
+    justify-content: center;
+    padding: 10px;
+  }
+  .ndx-sidebar-toggle {
+    display: none;
+  }
+  .ndx-sidebar .brain-logo-wrap > div:last-child {
+    display: none;
+  }
+}

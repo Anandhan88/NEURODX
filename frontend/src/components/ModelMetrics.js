@@ -1,9 +1,9 @@
 import React from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { FiSliders, FiActivity, FiGrid, FiShield } from 'react-icons/fi';
+import { Sliders, Activity, Grid, Shield, Cpu, Layers, Disc, Settings } from 'lucide-react';
 
 const ModelMetrics = () => {
-  // Mock validation training curves data (for model statistics visualization)
+  // Validation training curves data
   const trainingData = [
     { epoch: 1, accuracy: 68.5, val_accuracy: 72.1, loss: 0.95, val_loss: 0.82 },
     { epoch: 5, accuracy: 79.2, val_accuracy: 81.4, loss: 0.61, val_loss: 0.55 },
@@ -14,121 +14,109 @@ const ModelMetrics = () => {
     { epoch: 30, accuracy: 98.2, val_accuracy: 96.2, loss: 0.08, val_loss: 0.16 },
   ];
 
-  // Confusion matrix layout data
   const classes = ['Glioma', 'Meningioma', 'No Tumor', 'Pituitary'];
   const confusionMatrix = [
-    [94, 3, 2, 1], // Glioma predicted as G, M, N, P
+    [94, 3, 2, 1], // Glioma
     [2, 92, 4, 2], // Meningioma
     [1, 1, 98, 0], // No Tumor
     [1, 2, 0, 97], // Pituitary
   ];
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       
       {/* Overview Cards */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '1.5rem'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gap: '16px'
       }}>
-        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid var(--accent-cyan)' }}>
-          <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Model Accuracy</div>
-          <div style={{ fontSize: '2rem', fontWeight: 700, marginTop: '5px', color: 'var(--accent-cyan)' }}>96.2%</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '5px' }}>Validation Set (n=400 scans)</div>
-        </div>
-        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid var(--accent-purple)' }}>
-          <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Precision Rating</div>
-          <div style={{ fontSize: '2rem', fontWeight: 700, marginTop: '5px', color: 'var(--accent-purple)' }}>95.8%</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '5px' }}>False positive rate: ~2.1%</div>
-        </div>
-        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid var(--accent-indigo)' }}>
-          <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Recall (Sensitivity)</div>
-          <div style={{ fontSize: '2rem', fontWeight: 700, marginTop: '5px', color: 'var(--accent-indigo)' }}>96.0%</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '5px' }}>Tumor detection rate</div>
-        </div>
-        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid #10b981' }}>
-          <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--text-muted)' }}>F1 score</div>
-          <div style={{ fontSize: '2rem', fontWeight: 700, marginTop: '5px', color: '#10b981' }}>95.9%</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '5px' }}>Harmonic mean of indicators</div>
-        </div>
+        {[
+          { label: 'Model Accuracy', val: '96.2%', sub: 'Validation Set (n=400 scans)', color: 'var(--primary)' },
+          { label: 'Precision Rating', val: '95.8%', sub: 'False positive rate: ~2.1%', color: 'var(--accent)' },
+          { label: 'Recall (Sensitivity)', val: '96.0%', sub: 'True positive rate', color: 'var(--secondary)' },
+          { label: 'F1 Score', val: '95.9%', sub: 'Harmonic mean score', color: 'var(--success)' },
+        ].map((card) => (
+          <div key={card.label} className="card" style={{ borderLeft: `4px solid ${card.color}` }}>
+            <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600 }}>{card.label}</span>
+            <div style={{ fontSize: '1.8rem', fontWeight: 800, marginTop: '4px', color: card.color }}>{card.val}</div>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{card.sub}</span>
+          </div>
+        ))}
       </div>
 
       {/* Curves & Matrices Grid */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))',
-        gap: '2rem'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+        gap: '20px'
       }}>
         
         {/* Learning Curves Chart */}
-        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '12px' }}>
-          <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FiActivity style={{ color: 'var(--accent-cyan)' }} />
+        <div className="card" style={{ padding: '20px' }}>
+          <h3 style={{ fontSize: '0.95rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Activity size={16} style={{ color: 'var(--primary)' }} />
             Training Progress (Accuracy Curve)
           </h3>
-          <div style={{ width: '100%', height: '300px' }}>
+          <div style={{ width: '100%', height: '240px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trainingData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="epoch" label={{ value: 'Epoch', position: 'insideBottomRight', offset: -5, fill: 'var(--text-muted)' }} stroke="var(--text-muted)" />
-                <YAxis label={{ value: 'Accuracy (%)', angle: -90, position: 'insideLeft', fill: 'var(--text-muted)' }} stroke="var(--text-muted)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+                <XAxis dataKey="epoch" stroke="#94A3B8" fontSize={11} tickLine={false} />
+                <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} />
                 <Tooltip 
-                  contentStyle={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
-                  labelStyle={{ color: 'var(--text-primary)' }}
+                  contentStyle={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: '8px', fontSize: '0.8rem' }}
                 />
-                <Legend />
-                <Line type="monotone" dataKey="accuracy" name="Training Accuracy" stroke="var(--accent-cyan)" strokeWidth={2} activeDot={{ r: 8 }} />
-                <Line type="monotone" dataKey="val_accuracy" name="Validation Accuracy" stroke="var(--accent-purple)" strokeWidth={2} />
+                <Legend iconSize={8} wrapperStyle={{ fontSize: '0.78rem' }} />
+                <Line type="monotone" dataKey="accuracy" name="Training Acc" stroke="var(--primary)" strokeWidth={2} activeDot={{ r: 6 }} />
+                <Line type="monotone" dataKey="val_accuracy" name="Val Acc" stroke="var(--accent)" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Confusion Matrix Visual */}
-        <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '12px' }}>
-          <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FiGrid style={{ color: 'var(--accent-indigo)' }} />
+        {/* Confusion Matrix */}
+        <div className="card" style={{ padding: '20px' }}>
+          <h3 style={{ fontSize: '0.95rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Grid size={16} style={{ color: 'var(--secondary)' }} />
             Confusion Matrix (Validation Results)
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '10px' }}>
-              <div style={{ width: '25%', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Pred Glioma</div>
-              <div style={{ width: '25%', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Pred Menin</div>
-              <div style={{ width: '25%', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Pred NoTum</div>
-              <div style={{ width: '25%', textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)' }}>Pred Pitui</div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '4px' }}>
+              {classes.map(c => (
+                <div key={c} style={{ width: '22%', textAlign: 'center', fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                  Pred {c.substring(0, 5)}
+                </div>
+              ))}
             </div>
             
             {classes.map((className, rowIdx) => (
               <div key={className} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                {/* Row Label */}
-                <div style={{ width: '22%', fontWeight: 500, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <div style={{ width: '18%', fontWeight: 600, fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
                   True {className}
                 </div>
-                {/* Cells */}
-                <div style={{ display: 'flex', width: '78%', gap: '6px' }}>
+                <div style={{ display: 'flex', width: '82%', gap: '6px' }}>
                   {confusionMatrix[rowIdx].map((val, colIdx) => {
                     const isDiagonal = rowIdx === colIdx;
-                    // Calculate intensity background color based on percentage
-                    const alpha = val / 100 * 0.4 + 0.05;
+                    const alpha = val / 100 * 0.35 + 0.05;
                     const bgColor = isDiagonal 
-                      ? `rgba(6, 182, 212, ${alpha})`
+                      ? `rgba(15, 76, 129, ${alpha})`
                       : `rgba(239, 68, 68, ${alpha})`;
-                    const textColor = isDiagonal ? '#22d3ee' : '#f87171';
+                    const textColor = isDiagonal ? 'var(--primary)' : 'var(--danger)';
                     
                     return (
                       <div 
                         key={colIdx} 
                         style={{
                           width: '25%',
-                          padding: '16px 0',
+                          padding: '12px 0',
                           textAlign: 'center',
-                          borderRadius: '6px',
+                          borderRadius: '8px',
                           background: bgColor,
                           color: textColor,
                           fontWeight: isDiagonal ? 700 : 400,
-                          fontSize: '0.95rem',
-                          border: isDiagonal ? '1px solid rgba(6, 182, 212, 0.25)' : '1px solid rgba(239, 68, 68, 0.08)'
+                          fontSize: '0.85rem',
+                          border: isDiagonal ? '1px solid var(--primary-200)' : '1.5px solid transparent'
                         }}
                       >
                         {val}%
@@ -144,40 +132,40 @@ const ModelMetrics = () => {
       </div>
 
       {/* Model Specifications Section */}
-      <div className="glass-panel" style={{ padding: '1.5rem', borderRadius: '12px' }}>
-        <h3 style={{ fontSize: '1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <FiSliders style={{ color: 'var(--accent-purple)' }} />
-          Clinical CNN Model Architecture specifications
+      <div className="card" style={{ padding: '20px' }}>
+        <h3 style={{ fontSize: '0.95rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Sliders size={16} style={{ color: 'var(--accent)' }} />
+          Clinical CNN Model Architecture Specifications
         </h3>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '1.5rem',
-          fontSize: '0.9rem'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '20px',
+          fontSize: '0.85rem'
         }}>
           <div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>TensorFlow Framework</div>
-            <div style={{ fontWeight: 600, marginTop: '2px' }}>Keras Engine v2.21.0</div>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', fontWeight: 600, display: 'block' }}>
+              <Settings size={12} style={{ display: 'inline', marginRight: 4 }} /> Framework
+            </span>
+            <strong style={{ display: 'block', marginTop: '2px', color: 'var(--text-primary)' }}>Keras / TensorFlow Engine</strong>
           </div>
           <div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>Input Image Dimension</div>
-            <div style={{ fontWeight: 600, marginTop: '2px' }}>150 × 150 × 3 (RGB)</div>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', fontWeight: 600, display: 'block' }}>
+              <Layers size={12} style={{ display: 'inline', marginRight: 4 }} /> Dimensions
+            </span>
+            <strong style={{ display: 'block', marginTop: '2px', color: 'var(--text-primary)' }}>150 × 150 × 3 (RGB)</strong>
           </div>
           <div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>Neural Layers Count</div>
-            <div style={{ fontWeight: 600, marginTop: '2px' }}>12 (Convolutional + Dense)</div>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', fontWeight: 600, display: 'block' }}>
+              <Cpu size={12} style={{ display: 'inline', marginRight: 4 }} /> Layer Depth
+            </span>
+            <strong style={{ display: 'block', marginTop: '2px', color: 'var(--text-primary)' }}>12 Convolutional & Dense layers</strong>
           </div>
           <div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>Optimization Parameters</div>
-            <div style={{ fontWeight: 600, marginTop: '2px' }}>Adam (lr = 0.001)</div>
-          </div>
-          <div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>Loss Function Type</div>
-            <div style={{ fontWeight: 600, marginTop: '2px' }}>Categorical Cross-Entropy</div>
-          </div>
-          <div>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>Total Trainable Params</div>
-            <div style={{ fontWeight: 600, marginTop: '2px' }}>1.28 Million Weights</div>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', fontWeight: 600, display: 'block' }}>
+              <Disc size={12} style={{ display: 'inline', marginRight: 4 }} /> Params Count
+            </span>
+            <strong style={{ display: 'block', marginTop: '2px', color: 'var(--text-primary)' }}>1.28 Million Weights</strong>
           </div>
         </div>
       </div>
