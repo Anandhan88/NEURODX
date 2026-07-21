@@ -1,12 +1,18 @@
 services:
   - type: web
-    name: brain-tumor-detector-backend
+    name: neurodx-backend
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
     rootDir: backend
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: gunicorn app:app --workers 1 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT
     envVars:
-      - key: MONGO_URI
-        sync: false
       - key: PYTHON_VERSION
         value: 3.11.10
+      - key: MONGO_URI
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: TF_CPP_MIN_LOG_LEVEL
+        value: "2"
+      - key: TF_ENABLE_ONEDNN_OPTS
+        value: "0"
