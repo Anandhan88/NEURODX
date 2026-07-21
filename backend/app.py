@@ -33,7 +33,7 @@ from db import (
 load_dotenv()
 
 # ========== Initialize Flask app ==========
-app = Flask(__name__, static_folder='../frontend/build', static_url_path='/')
+app = Flask(__name__)
 CORS(app)
 
 # ========== Lazy / Background Brain Tumor Classifier Model Loader ==========
@@ -104,9 +104,13 @@ def preprocess_image(img):
 
 # ========== API Endpoints ==========
 
-@app.route('/', methods=['GET'])
-def serve_index():
-    return app.send_static_file('index.html')
+@app.route("/", methods=["GET"])
+def home():
+    return jsonify({
+        "status": "running",
+        "message": "NEURODX Brain Tumor Detection API",
+        "health": "/health"
+    })
 
 @app.route('/health', methods=['GET'])
 def health_check():
