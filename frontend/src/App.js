@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import LandingPage from './components/LandingPage';
@@ -8,7 +8,6 @@ import Header from './components/Header';
 import Dashboard from './components/Dashboard';
 import UploadForm from './components/UploadForm';
 import ResultChart from './components/ResultChart';
-import HistoryLog from './components/HistoryLog';
 import PatientManagement from './components/PatientManagement';
 import ModelMetrics from './components/ModelMetrics';
 import AIInsights from './components/AIInsights';
@@ -55,7 +54,7 @@ function App() {
   };
 
   // Load history & MongoDB Atlas dashboard stats
-  const fetchStatsData = async () => {
+  const fetchStatsData = useCallback(async () => {
     try {
       const [historyRes, statsRes] = await Promise.allSettled([
         axios.get('/history'),
@@ -97,13 +96,11 @@ function App() {
         });
       }
     }
-  };
+  }, [hospitalId]);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchStatsData();
-    }
-  }, [isLoggedIn, hospitalId]);
+    fetchStatsData();
+  }, [fetchStatsData]);
 
   // Recalculate stats when a new result is logged
   const handleResult = (data) => {
@@ -195,14 +192,14 @@ function App() {
       {/* Settings Modal Overlay */}
       <AnimatePresence>
         {showSettings && (
-          <motion.div 
+          <motion.div
             className="ndx-modal-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowSettings(false)}
           >
-            <motion.div 
+            <motion.div
               className="ndx-settings-modal card"
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}

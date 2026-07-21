@@ -2,21 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, Calendar, User, Activity, FileText, 
-  RefreshCw, ArrowRight, Filter, Download, 
+  Search, User, Activity, FileText, 
+  RefreshCw, Filter, Download, 
   ArrowUpDown, UserCheck, Stethoscope, Building2, ChevronRight, X, AlertCircle
 } from 'lucide-react';
 import PDFReport from './PDFReport';
 
-const getBadgeClass = (tumorClass) => {
-  switch (tumorClass) {
-    case 'Glioma': return 'glioma';
-    case 'Meningioma': return 'meningioma';
-    case 'No Tumor': return 'no-tumor';
-    case 'Pituitary': return 'pituitary';
-    default: return '';
-  }
-};
 
 const getSeverityBadge = (tumorClass, confidence) => {
   if (tumorClass === 'No Tumor') return <span className="badge badge-success">Normal</span>;

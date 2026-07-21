@@ -1,6 +1,6 @@
 import React from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { Sliders, Activity, Grid, Shield, Cpu, Layers, Disc, Settings } from 'lucide-react';
+import { Sliders, Activity, Grid, Cpu, Layers, Disc, Settings } from 'lucide-react';
 
 const ModelMetrics = () => {
   // Validation training curves data

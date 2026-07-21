@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Cpu, Activity, FileText, CheckCircle2, ShieldAlert, Award, ChevronDown, Monitor, CheckCircle, Database } from 'lucide-react';
+import { ArrowRight, Cpu, Activity, FileText, CheckCircle2, ShieldAlert, Award } from 'lucide-react';
 import BrainLogo from './BrainLogo';
 import './LandingPage.css';
 

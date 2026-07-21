@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Upload, User, FileText, Activity, CheckCircle2, 
+  Upload, User, Activity, 
   AlertCircle, Image, ZoomIn, ZoomOut, RefreshCw, 
-  ChevronRight, Sparkles, BrainCircuit, ShieldAlert
+  Sparkles, BrainCircuit, ShieldAlert
 } from 'lucide-react';
 import ThreeBrain from './ThreeBrain';
 import './UploadForm.css';
