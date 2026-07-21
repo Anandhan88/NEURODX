@@ -9,6 +9,7 @@ import Dashboard from './components/Dashboard';
 import UploadForm from './components/UploadForm';
 import ResultChart from './components/ResultChart';
 import HistoryLog from './components/HistoryLog';
+import PatientManagement from './components/PatientManagement';
 import ModelMetrics from './components/ModelMetrics';
 import AIInsights from './components/AIInsights';
 import './App.css';
@@ -53,21 +54,34 @@ function App() {
     setCurrentView('landing');
   };
 
-  // Load history database to calculate stats
+  // Load history & MongoDB Atlas dashboard stats
   const fetchStatsData = async () => {
     try {
-      const res = await axios.get('/history');
-      const data = res.data;
+      const [historyRes, statsRes] = await Promise.allSettled([
+        axios.get('/history'),
+        axios.get('/dashboard/stats')
+      ]);
+
+      const data = historyRes.status === 'fulfilled' ? historyRes.value.data : [];
       setHistory(data);
 
-      const tumors = data.filter(item => item.tumor_class && item.tumor_class !== 'No Tumor').length;
-
-      setStats({
-        totalScans: data.length,
-        tumorsDetected: tumors,
-        accuracy: '96.2%',
-        activeObserver: hospitalId || 'Portal Admin'
-      });
+      if (statsRes.status === 'fulfilled' && statsRes.value.data) {
+        const s = statsRes.value.data;
+        setStats({
+          totalScans: s.totalScans || data.length,
+          tumorsDetected: s.tumorsDetected || data.filter(i => i.tumor_class && i.tumor_class !== 'No Tumor').length,
+          accuracy: '96.2%',
+          activeObserver: hospitalId || 'Portal Admin'
+        });
+      } else {
+        const tumors = data.filter(item => item.tumor_class && item.tumor_class !== 'No Tumor').length;
+        setStats({
+          totalScans: data.length,
+          tumorsDetected: tumors,
+          accuracy: '96.2%',
+          activeObserver: hospitalId || 'Portal Admin'
+        });
+      }
     } catch (err) {
       console.error("Error fetching stats data:", err);
       const localData = localStorage.getItem('bt_scan_history');
@@ -157,7 +171,7 @@ function App() {
             {/* Patients */}
             {activeTab === 'patients' && (
               <motion.div key="patients" {...pageTransition}>
-                <HistoryLog />
+                <PatientManagement hospitalId={hospitalId} />
               </motion.div>
             )}
 

@@ -174,17 +174,19 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
         return;
       }
     }
-
+    const API_URL = "http://localhost:5000";
     const endpoint = isLogin ? 'login' : 'signup';
     const payload = { email, password };
 
     if (!isLogin) {
       payload.hospital_name = hospitalName;
+      payload.doctor_name = doctorName || hospitalName;
       payload.phone_number = phoneNumber;
+      payload.role = 'hospital';
     }
 
     try {
-      const res = await axios.post(`/${endpoint}`, payload);
+      const res = await axios.post(`${API_URL}/${endpoint}`, payload);
       if (res.status === 200) {
         if (isLogin) {
           setSuccess(true);
@@ -368,11 +370,17 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
               key={isLogin ? 'login-form' : 'register-form'}
               className="auth-form"
               onSubmit={handleSubmit}
+              autoComplete="off"
+              data-lpignore="true"
               initial={{ opacity: 0, x: isLogin ? -20 : 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: isLogin ? 20 : -20 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
+              {/* Fake hidden inputs to trick Chrome password manager */}
+              <input type="text" name="prevent_autofill_username" style={{ display: 'none' }} tabIndex={-1} aria-hidden="true" />
+              <input type="password" name="prevent_autofill_password" style={{ display: 'none' }} tabIndex={-1} aria-hidden="true" />
+
               {/* ---- LOGIN FORM ---- */}
               {isLogin ? (
                 <>
@@ -381,14 +389,17 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                     <div className="auth-input-wrapper">
                       <span className="auth-input-icon"><Mail size={17} /></span>
                       <input
-                        type="email"
+                        type="text"
+                        inputMode="email"
                         id="login-email"
+                        name="user_login_identifier"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="email"
                         required
                         disabled={loading}
-                        autoComplete="email"
+                        autoComplete="new-password"
+                        data-lpignore="true"
                         aria-label="Email Address"
                       />
                       <label htmlFor="login-email" className="auth-input-label">Email Address</label>
@@ -400,14 +411,17 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                     <div className="auth-input-wrapper">
                       <span className="auth-input-icon"><Lock size={17} /></span>
                       <input
-                        type={showPassword ? 'text' : 'password'}
+                        type="text"
                         id="login-password"
+                        name="user_login_secret"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="password"
                         required
                         disabled={loading}
-                        autoComplete="current-password"
+                        autoComplete="new-password"
+                        data-lpignore="true"
+                        style={{ WebkitTextSecurity: showPassword ? 'none' : 'disc' }}
                         aria-label="Password"
                       />
                       <label htmlFor="login-password" className="auth-input-label">Password</label>
@@ -486,11 +500,14 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                         <input
                           type="text"
                           id="reg-hospital"
+                          name="reg_hospital_field"
                           value={hospitalName}
                           onChange={(e) => setHospitalName(e.target.value)}
                           placeholder="hospital"
                           required
                           disabled={loading}
+                          autoComplete="new-password"
+                          data-lpignore="true"
                           aria-label="Hospital or Clinic Name"
                         />
                         <label htmlFor="reg-hospital" className="auth-input-label">Hospital / Clinic Name</label>
@@ -503,11 +520,14 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                         <input
                           type="text"
                           id="reg-doctor"
+                          name="reg_doctor_field"
                           value={doctorName}
                           onChange={(e) => setDoctorName(e.target.value)}
                           placeholder="doctor"
                           required
                           disabled={loading}
+                          autoComplete="new-password"
+                          data-lpignore="true"
                           aria-label="Doctor Name"
                         />
                         <label htmlFor="reg-doctor" className="auth-input-label">Doctor Name</label>
@@ -520,14 +540,17 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                     <div className="auth-input-wrapper">
                       <span className="auth-input-icon"><Mail size={17} /></span>
                       <input
-                        type="email"
+                        type="text"
+                        inputMode="email"
                         id="reg-email"
+                        name="reg_email_field"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="email"
                         required
                         disabled={loading}
-                        autoComplete="email"
+                        autoComplete="new-password"
+                        data-lpignore="true"
                         aria-label="Official Email Address"
                       />
                       <label htmlFor="reg-email" className="auth-input-label">Official Email Address</label>
@@ -542,11 +565,14 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                         <input
                           type="tel"
                           id="reg-phone"
+                          name="reg_phone_field"
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
                           placeholder="phone"
                           required
                           disabled={loading}
+                          autoComplete="new-password"
+                          data-lpignore="true"
                           aria-label="Phone Number"
                         />
                         <label htmlFor="reg-phone" className="auth-input-label">Phone Number</label>
@@ -582,10 +608,13 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                       <input
                         type="text"
                         id="reg-medreg"
+                        name="reg_medreg_field"
                         value={medRegNumber}
                         onChange={(e) => setMedRegNumber(e.target.value)}
                         placeholder="medreg"
                         disabled={loading}
+                        autoComplete="new-password"
+                        data-lpignore="true"
                         aria-label="Medical Registration Number (Optional)"
                       />
                       <label htmlFor="reg-medreg" className="auth-input-label">Medical Reg. Number (Optional)</label>
@@ -598,8 +627,9 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                       <div className="auth-input-wrapper">
                         <span className="auth-input-icon"><Lock size={17} /></span>
                         <input
-                          type={showPassword ? 'text' : 'password'}
+                          type="text"
                           id="reg-password"
+                          name="reg_password_field"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           onBlur={() => markTouched('password')}
@@ -607,6 +637,8 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                           required
                           disabled={loading}
                           autoComplete="new-password"
+                          data-lpignore="true"
+                          style={{ WebkitTextSecurity: showPassword ? 'none' : 'disc' }}
                           aria-label="Password"
                         />
                         <label htmlFor="reg-password" className="auth-input-label">Password</label>
@@ -642,8 +674,9 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                       <div className="auth-input-wrapper">
                         <span className="auth-input-icon"><Lock size={17} /></span>
                         <input
-                          type={showConfirmPassword ? 'text' : 'password'}
+                          type="text"
                           id="reg-confirm-password"
+                          name="reg_confirm_password_field"
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           onBlur={() => markTouched('confirmPassword')}
@@ -651,6 +684,8 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                           required
                           disabled={loading}
                           autoComplete="new-password"
+                          data-lpignore="true"
+                          style={{ WebkitTextSecurity: showConfirmPassword ? 'none' : 'disc' }}
                           aria-label="Confirm Password"
                         />
                         <label htmlFor="reg-confirm-password" className="auth-input-label">Confirm Password</label>

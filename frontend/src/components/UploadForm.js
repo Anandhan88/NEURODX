@@ -181,7 +181,7 @@ function UploadForm({ onResult }) {
     <div className="ndx-upload-grid">
       {/* LEFT COLUMN: Input form & controls */}
       <div className="ndx-upload-left">
-        <form onSubmit={handleUpload} className="card ndx-analysis-form">
+        <form onSubmit={handleUpload} className="card ndx-analysis-form" autoComplete="off">
           <div className="ndx-form-header-row">
             <User size={18} className="form-title-icon" />
             <h3>Patient & Scan Parameters</h3>
@@ -199,6 +199,7 @@ function UploadForm({ onResult }) {
                 onChange={(e) => setPatientName(e.target.value)}
                 required
                 disabled={loading}
+                autoComplete="off"
               />
             </div>
             <div className="form-group">
@@ -212,6 +213,7 @@ function UploadForm({ onResult }) {
                 onChange={(e) => setPatientId(e.target.value)}
                 required
                 disabled={loading}
+                autoComplete="off"
               />
             </div>
           </div>
@@ -228,6 +230,7 @@ function UploadForm({ onResult }) {
                 onChange={(e) => setPatientAge(e.target.value)}
                 required
                 disabled={loading}
+                autoComplete="off"
               />
             </div>
             <div className="form-group">
@@ -238,6 +241,7 @@ function UploadForm({ onResult }) {
                 className="input"
                 value="MRI - T1 weighted contrast"
                 disabled
+                autoComplete="off"
                 style={{ background: 'var(--bg-primary)', color: 'var(--text-muted)' }}
               />
             </div>

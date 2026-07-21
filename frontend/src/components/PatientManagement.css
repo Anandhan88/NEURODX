@@ -1,0 +1,577 @@
+/* ============================================================
+   NeuroDX AI — Patient Management Design System CSS
+   Clean Enterprise Theme (Supports Light & Dark Modes)
+   ============================================================ */
+
+.ndx-patients-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Header Section */
+.ndx-patients-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ndx-patients-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.02em;
+}
+
+.ndx-patients-header p {
+  color: var(--text-secondary, #475569);
+  font-size: 0.9rem;
+}
+
+.btn-add-patient {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--primary, #0f4c81);
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md, 10px);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(15, 76, 129, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-add-patient:hover {
+  background: var(--primary-light, #1a6bb5);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 76, 129, 0.35);
+}
+
+/* Search & Filter Controls Card */
+.ndx-patients-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-lg, 14px);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
+}
+
+.ndx-search-box {
+  position: relative;
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  align-items: center;
+}
+
+.ndx-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted, #94a3b8);
+  pointer-events: none;
+}
+
+.ndx-search-box input {
+  width: 100%;
+  padding: 0.65rem 2.4rem 0.65rem 2.4rem;
+  background: var(--bg-primary, #f5f8fc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  color: var(--text-primary, #0f172a);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.ndx-search-box input::placeholder {
+  color: var(--text-muted, #94a3b8);
+}
+
+.ndx-search-box input:focus {
+  border-color: var(--primary, #0f4c81);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1);
+}
+
+.ndx-clear-search {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ndx-clear-search:hover {
+  color: var(--text-primary, #0f172a);
+}
+
+.ndx-filter-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.ndx-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ndx-select-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted, #94a3b8);
+  pointer-events: none;
+}
+
+.ndx-select-wrapper select {
+  padding: 0.65rem 1rem 0.65rem 2.2rem;
+  background: var(--bg-primary, #f5f8fc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  color: var(--text-primary, #0f172a);
+  font-size: 0.88rem;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ndx-select-wrapper select:focus {
+  border-color: var(--primary, #0f4c81);
+  background: #ffffff;
+}
+
+/* Patient Directory Table Card */
+.ndx-patients-table-card {
+  padding: 0;
+  overflow: hidden;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-lg, 14px);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
+}
+
+.ndx-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ndx-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.88rem;
+}
+
+.ndx-table th {
+  background: var(--bg-tertiary, #edf2f7);
+  color: var(--text-secondary, #475569);
+  font-weight: 700;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.ndx-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  color: var(--text-primary, #0f172a);
+  vertical-align: middle;
+}
+
+.ndx-table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.ndx-table tbody tr:hover {
+  background: var(--bg-hover, #f0f4f8);
+}
+
+.ndx-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ndx-patient-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ndx-patient-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary, #0f4c81) 0%, var(--primary-light, #1a6bb5) 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.ndx-contact-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary, #475569);
+}
+
+.ndx-contact-cell span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Action Buttons */
+.ndx-action-btns {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--bg-primary, #f5f8fc);
+  color: var(--text-secondary, #475569);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view:hover {
+  color: var(--primary, #0f4c81);
+  border-color: var(--primary, #0f4c81);
+  background: rgba(15, 76, 129, 0.08);
+}
+
+.btn-edit:hover {
+  color: #d97706;
+  border-color: #d97706;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.btn-delete:hover {
+  color: #dc2626;
+  border-color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Status Badges */
+.ndx-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--bg-tertiary, #edf2f7);
+  color: var(--text-secondary, #475569);
+}
+
+.badge-success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.badge-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.badge-info {
+  background: rgba(15, 76, 129, 0.1);
+  color: var(--primary, #0f4c81);
+  border: 1px solid rgba(15, 76, 129, 0.25);
+}
+
+/* Modals */
+.ndx-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.ndx-modal-content {
+  width: 100%;
+  max-width: 650px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-xl, 18px);
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(15, 23, 42, 0.1));
+  overflow: hidden;
+  color: var(--text-primary, #0f172a);
+}
+
+.ndx-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  background: var(--bg-primary, #f5f8fc);
+}
+
+.ndx-modal-header h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+}
+
+.ndx-close-modal {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ndx-close-modal:hover {
+  color: var(--text-primary, #0f172a);
+}
+
+.ndx-modal-form {
+  padding: 1.5rem;
+}
+
+.ndx-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.ndx-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ndx-form-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+}
+
+.ndx-form-group input,
+.ndx-form-group select {
+  padding: 0.65rem 0.85rem;
+  background: var(--bg-primary, #f5f8fc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  color: var(--text-primary, #0f172a);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.ndx-form-group input:focus,
+.ndx-form-group select:focus {
+  border-color: var(--primary, #0f4c81);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1);
+}
+
+.ndx-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+/* Patient Detail Inspection View Modal */
+.ndx-header-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ndx-large-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary, #0f4c81) 0%, var(--primary-light, #1a6bb5) 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.ndx-patient-detail-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ndx-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  background: var(--bg-primary, #f5f8fc);
+  padding: 1.25rem;
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.ndx-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ndx-detail-item .label {
+  font-size: 0.78rem;
+  color: var(--text-secondary, #475569);
+  font-weight: 600;
+}
+
+.ndx-detail-item .value {
+  font-size: 0.92rem;
+  color: var(--text-primary, #0f172a);
+}
+
+.ndx-attached-scans {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ndx-attached-scans h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+}
+
+.ndx-scans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ndx-scan-card {
+  padding: 0.85rem 1rem;
+  background: var(--bg-primary, #f5f8fc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 10px);
+  display: flex;
+  flex-direction: column;
+}
+
+.ndx-scan-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Delete Modal */
+.ndx-delete-modal {
+  max-width: 440px;
+  padding: 1.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Toast Notification */
+.ndx-toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 10000;
+  background: #10b981;
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md, 10px);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(15, 23, 42, 0.1));
+}
+
+/* Loading & Empty States */
+.ndx-loading-state, .ndx-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--text-secondary, #475569);
+}
+
+.ndx-empty-icon {
+  margin-bottom: 1rem;
+  color: var(--text-muted, #94a3b8);
+}
+
+.ndx-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border-color, #e2e8f0);
+  border-top-color: var(--primary, #0f4c81);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .ndx-form-grid, .ndx-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
