@@ -34,7 +34,7 @@ load_dotenv()
 
 # ========== Initialize Flask app ==========
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], "allow_headers": ["Content-Type", "Authorization"]}})
 
 # ========== Lazy / Background Brain Tumor Classifier Model Loader ==========
 MODEL_PATH = os.path.join("model", "brain_tumor_classifier.h5")

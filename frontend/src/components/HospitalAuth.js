@@ -174,7 +174,7 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
         return;
       }
     }
-    const API_URL = "http://localhost:5000";
+    const API_BASE = process.env.REACT_APP_API_URL || '';
     const endpoint = isLogin ? 'login' : 'signup';
     const payload = { email, password };
 
@@ -186,7 +186,8 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
     }
 
     try {
-      const res = await axios.post(`${API_URL}/${endpoint}`, payload);
+      const requestUrl = API_BASE ? `${API_BASE.replace(/\/$/, '')}/${endpoint}` : `/${endpoint}`;
+      const res = await axios.post(requestUrl, payload);
       if (res.status === 200) {
         if (isLogin) {
           setSuccess(true);
