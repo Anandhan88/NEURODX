@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
@@ -174,7 +175,7 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
         return;
       }
     }
-    const API_BASE = process.env.REACT_APP_API_URL || '';
+    const API_BASE = API_BASE_URL;
     const endpoint = isLogin ? 'login' : 'signup';
     const payload = { email, password };
 
@@ -186,7 +187,7 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
     }
 
     try {
-      const requestUrl = API_BASE ? `${API_BASE.replace(/\/$/, '')}/${endpoint}` : `/${endpoint}`;
+      const requestUrl = `${API_BASE}/${endpoint}`;
       const res = await axios.post(requestUrl, payload);
       if (res.status === 200) {
         if (isLogin) {

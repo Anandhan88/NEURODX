@@ -713,6 +713,13 @@ def log_request():
     except Exception:
         pass
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
 # ========== Run Flask App ==========
 if __name__ == '__main__':
     print("[INFO] Starting Brain Tumor Classifier API...")

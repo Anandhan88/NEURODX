@@ -2,7 +2,47 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/predict",
+      "destination": "https://neurodx-001b.onrender.com/predict"
+    },
+    {
+      "source": "/login",
+      "destination": "https://neurodx-001b.onrender.com/login"
+    },
+    {
+      "source": "/signup",
+      "destination": "https://neurodx-001b.onrender.com/signup"
+    },
+    {
+      "source": "/history",
+      "destination": "https://neurodx-001b.onrender.com/history"
+    },
+    {
+      "source": "/patients/:path*",
+      "destination": "https://neurodx-001b.onrender.com/patients/:path*"
+    },
+    {
+      "source": "/dashboard/:path*",
+      "destination": "https://neurodx-001b.onrender.com/dashboard/:path*"
+    },
+    {
+      "source": "/analytics",
+      "destination": "https://neurodx-001b.onrender.com/analytics"
+    },
+    {
+      "source": "/activity-logs",
+      "destination": "https://neurodx-001b.onrender.com/activity-logs"
+    },
+    {
+      "source": "/health",
+      "destination": "https://neurodx-001b.onrender.com/health"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://neurodx-001b.onrender.com/:path*"
+    },
+    {
+      "source": "/((?!api|predict|login|signup|history|patients|dashboard|analytics|activity-logs|health).*)",
       "destination": "/index.html"
     }
   ]

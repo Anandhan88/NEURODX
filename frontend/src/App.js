@@ -11,10 +11,11 @@ import ResultChart from './components/ResultChart';
 import PatientManagement from './components/PatientManagement';
 import ModelMetrics from './components/ModelMetrics';
 import AIInsights from './components/AIInsights';
+import { API_BASE_URL } from './services/api';
 import './App.css';
 
 // Configure API baseURL for Vercel/Render separate deployment
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || '';
+axios.defaults.baseURL = API_BASE_URL;
 
 const pageTransition = {
   initial: { opacity: 0, y: 8 },
