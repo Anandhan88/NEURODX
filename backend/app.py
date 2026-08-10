@@ -225,8 +225,8 @@ def signup():
             print(f"[SIGNUP DEBUG] Existing user found for email '{email}'")
             return jsonify({"error": "Email address already registered"}), 409
 
-        # Hash password securely using Werkzeug
-        hashed_password = generate_password_hash(password)
+        # Hash password using fast iterations for high-speed response
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256:5000')
 
         new_user = {
             "email": email,
