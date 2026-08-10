@@ -8,7 +8,8 @@ from pymongo import MongoClient, ASCENDING, DESCENDING
 # Load environment variables
 load_dotenv()
 
-MONGO_URI = os.getenv("MONGO_URI")
+DEFAULT_ATLAS_URI = "mongodb+srv://anandhans23aid_db_user:kVz2ktq8F0yQkKRq@cluster0.4wpzqoj.mongodb.net/brain_tumor_db?retryWrites=true&w=majority&appName=Cluster0"
+MONGO_URI = os.getenv("MONGO_URI") or DEFAULT_ATLAS_URI
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-brain-tumor-detection-2026")
 
 # In-memory fallbacks when MongoDB is offline
@@ -53,13 +54,13 @@ def init_db():
     global predictions_collection, reports_collection
     global analytics_collection, activity_logs_collection, history_collection
 
-    mongo_target = MONGO_URI or "mongodb://localhost:27017/"
+    mongo_target = MONGO_URI or DEFAULT_ATLAS_URI
     print(f"[INFO] Connecting to MongoDB: {mongo_target.split('@')[-1] if '@' in mongo_target else mongo_target}")
 
     try:
         kwargs = {
-            "serverSelectionTimeoutMS": 3000,
-            "connectTimeoutMS": 3000
+            "serverSelectionTimeoutMS": 10000,
+            "connectTimeoutMS": 10000
         }
         if "mongodb+srv://" in mongo_target or "tls=true" in mongo_target.lower():
             kwargs.update({
