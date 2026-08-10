@@ -173,9 +173,6 @@ def login():
 def signup():
     try:
         data = request.get_json() or {}
-        print(f"[SIGNUP DEBUG] Incoming request JSON: {data}")
-        print(f"[SIGNUP DEBUG] db.users_collection is None: {db.users_collection is None}")
-
         email = data.get("email", "").strip().lower()
         password = data.get("password", "")
         hospital_name = data.get("hospital_name", "")
@@ -188,17 +185,15 @@ def signup():
 
         existing_user = None
         if db.users_collection is not None:
-            existing_user = db.users_collection.find_one({"email": email})
+            existing_user = db.users_collection.find_one({"email": email}, {"_id": 1})
         else:
-            print("[SIGNUP DEBUG] MongoDB collection unavailable. Using fallback memory list.")
             existing_user = next((u for u in users_fallback if u.get("email") == email), None)
 
         if existing_user:
-            print(f"[SIGNUP DEBUG] Existing user found for email '{email}'")
             return jsonify({"error": "Email address already registered"}), 409
 
-        # Hash password using fast iterations for high-speed response
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256:5000')
+        # Fast password hash algorithm (pbkdf2:sha256:1000) for instant CPU computation
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256:1000')
 
         new_user = {
             "email": email,
@@ -210,24 +205,15 @@ def signup():
             "created_at": datetime.now().isoformat()
         }
 
-        print(f"[SIGNUP DEBUG] Document before insertion: {new_user}")
-
         if db.users_collection is not None:
-            result = db.users_collection.insert_one(new_user)
-            print(f"[SIGNUP DEBUG] Inserted ID: {result.inserted_id}")
-
-            # Immediate verification in 'users' collection in 'brain_tumor_db'
-            verify_doc = db.users_collection.find_one({"email": email})
-            print(f"[SIGNUP DEBUG] Immediate find_one verification result: {verify_doc}")
+            db.users_collection.insert_one(new_user)
         else:
-            print("[SIGNUP DEBUG] Inserting into fallback memory list.")
             users_fallback.append(new_user)
 
         log_activity("Account Registration", email, {"hospital": hospital_name})
         return jsonify({"message": "Signup successful"}), 200
 
-    except DuplicateKeyError as dup_err:
-        print(f"[SIGNUP DEBUG] DuplicateKeyError for email '{email}': {dup_err}")
+    except DuplicateKeyError:
         return jsonify({"error": "Email address already registered"}), 409
 
     except Exception as e:

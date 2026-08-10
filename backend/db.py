@@ -120,22 +120,30 @@ def init_db():
 # Initialize DB connection on module load
 init_db()
 
+import threading
+
 def is_connected():
     return users_collection is not None
 
 def log_activity(action, user_email="System", details=None):
-    """Record audit activity logs in MongoDB Atlas or fallback memory."""
-    log_entry = {
-        "action": action,
-        "user_email": user_email,
-        "details": details or {},
-        "timestamp": datetime.now().isoformat()
-    }
+    """Record audit activity logs asynchronously to eliminate API latency."""
+    def _async_log():
+        try:
+            log_entry = {
+                "action": action,
+                "user_email": user_email,
+                "details": details or {},
+                "timestamp": datetime.now().isoformat()
+            }
+            if activity_logs_collection is not None:
+                activity_logs_collection.insert_one(log_entry)
+            else:
+                activity_logs_fallback.append(log_entry)
+        except Exception as e:
+            print(f"Error logging activity: {e}")
+
     try:
-        if activity_logs_collection is not None:
-            activity_logs_collection.insert_one(log_entry)
-        else:
-            activity_logs_fallback.append(log_entry)
-    except Exception as e:
-        print(f"Error logging activity: {e}")
+        threading.Thread(target=_async_log, daemon=True).start()
+    except Exception:
+        pass
 
