@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import axios from 'axios';
-import { API_BASE_URL } from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
@@ -186,28 +185,14 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
 
     try {
       const endpoint = isLogin ? 'login' : 'signup';
-      const requestUrl = `/${endpoint}`;
-
-      let res;
-      try {
-        // Fast 4-second timeout attempt to server
-        res = await axios.post(requestUrl, payload, { timeout: 4000 });
-      } catch (fastErr) {
-        if (fastErr.response) {
-          // If server explicitly returned an error (e.g. 400/409 duplicate email/401 wrong password), display it
-          throw fastErr;
-        }
-        // If server is slow, offline or cold-starting (Render free tier), complete authentication instantly!
-        console.warn("Backend slow or cold-starting. Completing authentication instantly.");
-        res = { status: 200, data: { message: "Authentication completed" } };
-      }
+      const res = await axios.post(`/${endpoint}`, payload);
 
       if (res.status === 200 || res.status === 201) {
         if (isLogin) {
           setSuccess(true);
-          setTimeout(() => onAuthSuccess(email), 400);
+          setTimeout(() => onAuthSuccess(email), 600);
         } else {
-          setMessage('Account created successfully! Please log in.');
+          setMessage('Account created successfully! Please log in with your credentials.');
           setSuccess(true);
           setTimeout(() => {
             setIsLogin(true);
@@ -221,13 +206,13 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
             setAcceptTerms(false);
             setSuccess(false);
             setTouched({});
-          }, 600);
+          }, 1000);
         }
       }
     } catch (err) {
       setError(
         err.response?.data?.error ||
-        `${isLogin ? 'Login' : 'Registration'} failed. Please check your details.`
+        `${isLogin ? 'Login' : 'Registration'} failed. Please check your network or credentials.`
       );
     } finally {
       setLoading(false);
@@ -487,24 +472,6 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                         <span>Sign In</span>
                       </>
                     )}
-                  </motion.button>
-
-                  {/* 1-Click Demo Login Button */}
-                  <motion.button
-                    type="button"
-                    className="auth-submit-btn"
-                    style={{ marginTop: '0.75rem', background: 'linear-gradient(135deg, #0EA5E9, #0284C7)', borderColor: '#0EA5E9' }}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      setEmail('doctor@hospital.com');
-                      setPassword('doctor123');
-                      setSuccess(true);
-                      setTimeout(() => onAuthSuccess('doctor@hospital.com'), 600);
-                    }}
-                  >
-                    <Stethoscope size={18} />
-                    <span>1-Click Demo Doctor Access</span>
                   </motion.button>
 
                   {/* Divider */}

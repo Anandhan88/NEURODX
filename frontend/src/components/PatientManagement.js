@@ -36,7 +36,7 @@ const PatientManagement = ({ hospitalId }) => {
     gender: 'Male',
     phone: '',
     email: '',
-    doctor: hospitalId || 'Dr. Smith',
+    doctor: hospitalId || 'Attending Physician',
     prediction: 'No Tumor',
     confidence: '95.0',
     report_status: 'Completed'
@@ -72,7 +72,7 @@ const PatientManagement = ({ hospitalId }) => {
       gender: 'Male',
       phone: '',
       email: '',
-      doctor: hospitalId || 'Dr. Smith',
+      doctor: hospitalId || 'Attending Physician',
       prediction: 'No Tumor',
       confidence: '95.0',
       report_status: 'Completed'
@@ -89,7 +89,7 @@ const PatientManagement = ({ hospitalId }) => {
       gender: patient.gender || 'Male',
       phone: patient.phone || '',
       email: patient.email || '',
-      doctor: patient.doctor || patient.doctor_name || 'Dr. Smith',
+      doctor: patient.doctor || patient.doctor_name || 'Attending Physician',
       prediction: patient.prediction || patient.tumor_class || 'No Tumor',
       confidence: patient.confidence || '95.0',
       report_status: patient.report_status || 'Completed'

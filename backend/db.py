@@ -12,26 +12,7 @@ MONGO_URI = os.getenv("MONGO_URI")
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-brain-tumor-detection-2026")
 
 # In-memory fallbacks when MongoDB is offline
-users_fallback = [
-    {
-        "email": "admin@hospital.com",
-        "password": "pbkdf2:sha256:600000$8Z9pQ$49a4ee758117769cf32e2c2ddaa6df4ef1f0bc1c7e148bc8a87679633e9b1bbd", # admin
-        "hospital_name": "General Hospital",
-        "doctor_name": "Dr. Admin",
-        "phone_number": "1234567890",
-        "role": "admin",
-        "created_at": datetime.now().isoformat()
-    },
-    {
-        "email": "doctor@hospital.com",
-        "password": "pbkdf2:sha256:600000$Wv1bE$6c0c2018ea6ef07cf6bc3cbdf6d6a2f8b5066dbff1f9859ec1d87e07a33a388b", # doctor123
-        "hospital_name": "City Medical Center",
-        "doctor_name": "Dr. Smith",
-        "phone_number": "9876543210",
-        "role": "doctor",
-        "created_at": datetime.now().isoformat()
-    }
-]
+users_fallback = []
 
 patients_fallback = []
 predictions_fallback = []
