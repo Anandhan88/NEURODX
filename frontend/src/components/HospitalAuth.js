@@ -491,6 +491,24 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                     )}
                   </motion.button>
 
+                  {/* 1-Click Demo Login Button */}
+                  <motion.button
+                    type="button"
+                    className="auth-submit-btn"
+                    style={{ marginTop: '0.75rem', background: 'linear-gradient(135deg, #0EA5E9, #0284C7)', borderColor: '#0EA5E9' }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setEmail('doctor@hospital.com');
+                      setPassword('doctor123');
+                      setSuccess(true);
+                      setTimeout(() => onAuthSuccess('doctor@hospital.com'), 600);
+                    }}
+                  >
+                    <Stethoscope size={18} />
+                    <span>1-Click Demo Doctor Access</span>
+                  </motion.button>
+
                   {/* Divider */}
                   <div className="auth-divider">
                     <div className="auth-divider-line" />
