@@ -7,8 +7,6 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Building2,
-  Phone,
   User,
   ShieldCheck,
   Brain,
@@ -16,10 +14,8 @@ import {
   Activity,
   CheckCircle2,
   AlertCircle,
-  ChevronDown,
   LogIn,
   UserPlus,
-  FileText,
   Dna,
   Heart,
   Stethoscope
@@ -122,11 +118,7 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
   const [rememberMe, setRememberMe] = useState(false);
 
   /* Registration fields */
-  const [hospitalName, setHospitalName] = useState('');
-  const [doctorName, setDoctorName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [department, setDepartment] = useState('');
-  const [medRegNumber, setMedRegNumber] = useState('');
+  const [fullName, setFullName] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -177,10 +169,9 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
     const payload = { email, password };
 
     if (!isLogin) {
-      payload.hospital_name = hospitalName;
-      payload.doctor_name = doctorName || hospitalName;
-      payload.phone_number = phoneNumber;
-      payload.role = 'hospital';
+      payload.doctor_name = fullName || email.split('@')[0];
+      payload.hospital_name = fullName || email.split('@')[0];
+      payload.role = 'user';
     }
 
     try {
@@ -206,11 +197,7 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
           setSuccess(true);
           setTimeout(() => {
             setIsLogin(true);
-            setHospitalName('');
-            setDoctorName('');
-            setPhoneNumber('');
-            setDepartment('');
-            setMedRegNumber('');
+            setFullName('');
             setPassword('');
             setConfirmPassword('');
             setAcceptTerms(false);
@@ -341,11 +328,11 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25 }}
             >
-              <h2>{isLogin ? 'Welcome Back' : 'Hospital Registration'}</h2>
+              <h2>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
               <p>
                 {isLogin
                   ? 'Sign in to continue your medical analysis dashboard.'
-                  : 'Create your hospital account to access AI diagnostics.'}
+                  : 'Create your account to access AI diagnostics.'}
               </p>
             </motion.div>
           </AnimatePresence>
@@ -495,53 +482,31 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                   <div className="auth-switch-mode">
                     Don't have an account?
                     <button type="button" className="auth-switch-link" onClick={switchMode}>
-                      Create Hospital Account
+                      Create Account
                     </button>
                   </div>
                 </>
               ) : (
                 /* ---- REGISTRATION FORM ---- */
                 <>
-                  {/* Hospital Name + Doctor Name row */}
-                  <div className="auth-form-row">
-                    <div className="auth-input-group">
-                      <div className="auth-input-wrapper">
-                        <span className="auth-input-icon"><Building2 size={17} /></span>
-                        <input
-                          type="text"
-                          id="reg-hospital"
-                          name="reg_hospital_field"
-                          value={hospitalName}
-                          onChange={(e) => setHospitalName(e.target.value)}
-                          placeholder="hospital"
-                          required
-                          disabled={loading}
-                          autoComplete="new-password"
-                          data-lpignore="true"
-                          aria-label="Hospital or Clinic Name"
-                        />
-                        <label htmlFor="reg-hospital" className="auth-input-label">Hospital / Clinic Name</label>
-                      </div>
-                    </div>
-
-                    <div className="auth-input-group">
-                      <div className="auth-input-wrapper">
-                        <span className="auth-input-icon"><User size={17} /></span>
-                        <input
-                          type="text"
-                          id="reg-doctor"
-                          name="reg_doctor_field"
-                          value={doctorName}
-                          onChange={(e) => setDoctorName(e.target.value)}
-                          placeholder="doctor"
-                          required
-                          disabled={loading}
-                          autoComplete="new-password"
-                          data-lpignore="true"
-                          aria-label="Doctor Name"
-                        />
-                        <label htmlFor="reg-doctor" className="auth-input-label">Doctor Name</label>
-                      </div>
+                  {/* Full Name */}
+                  <div className="auth-input-group">
+                    <div className="auth-input-wrapper">
+                      <span className="auth-input-icon"><User size={17} /></span>
+                      <input
+                        type="text"
+                        id="reg-fullname"
+                        name="reg_fullname_field"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="fullname"
+                        required
+                        disabled={loading}
+                        autoComplete="new-password"
+                        data-lpignore="true"
+                        aria-label="Full Name"
+                      />
+                      <label htmlFor="reg-fullname" className="auth-input-label">Full Name</label>
                     </div>
                   </div>
 
@@ -561,73 +526,9 @@ function HospitalAuth({ onAuthSuccess, onBackToLanding }) {
                         disabled={loading}
                         autoComplete="new-password"
                         data-lpignore="true"
-                        aria-label="Official Email Address"
+                        aria-label="Email Address"
                       />
-                      <label htmlFor="reg-email" className="auth-input-label">Official Email Address</label>
-                    </div>
-                  </div>
-
-                  {/* Phone + Department row */}
-                  <div className="auth-form-row">
-                    <div className="auth-input-group">
-                      <div className="auth-input-wrapper">
-                        <span className="auth-input-icon"><Phone size={17} /></span>
-                        <input
-                          type="tel"
-                          id="reg-phone"
-                          name="reg_phone_field"
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                          placeholder="phone"
-                          required
-                          disabled={loading}
-                          autoComplete="new-password"
-                          data-lpignore="true"
-                          aria-label="Phone Number"
-                        />
-                        <label htmlFor="reg-phone" className="auth-input-label">Phone Number</label>
-                      </div>
-                    </div>
-
-                    <div className="auth-input-group">
-                      <div className={`auth-input-wrapper ${department ? 'has-value' : ''}`}>
-                        <span className="auth-input-icon"><Activity size={17} /></span>
-                        <select
-                          id="reg-department"
-                          value={department}
-                          onChange={(e) => setDepartment(e.target.value)}
-                          required
-                          disabled={loading}
-                          aria-label="Department"
-                        >
-                          <option value="">Select department</option>
-                          {departments.map((d) => (
-                            <option key={d} value={d}>{d}</option>
-                          ))}
-                        </select>
-                        <label htmlFor="reg-department" className="auth-input-label">Department</label>
-                        <span className="auth-select-arrow"><ChevronDown size={16} /></span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Medical Registration Number (optional) */}
-                  <div className="auth-input-group">
-                    <div className="auth-input-wrapper">
-                      <span className="auth-input-icon"><FileText size={17} /></span>
-                      <input
-                        type="text"
-                        id="reg-medreg"
-                        name="reg_medreg_field"
-                        value={medRegNumber}
-                        onChange={(e) => setMedRegNumber(e.target.value)}
-                        placeholder="medreg"
-                        disabled={loading}
-                        autoComplete="new-password"
-                        data-lpignore="true"
-                        aria-label="Medical Registration Number (Optional)"
-                      />
-                      <label htmlFor="reg-medreg" className="auth-input-label">Medical Reg. Number (Optional)</label>
+                      <label htmlFor="reg-email" className="auth-input-label">Email Address</label>
                     </div>
                   </div>
 
