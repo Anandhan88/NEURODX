@@ -34,7 +34,7 @@ const HistoryLog = () => {
   const [selectedRecord, setSelectedRecord] = useState(null);
 
   const fetchHistory = async () => {
-    try {
+    try { 
       setLoading(true);
       setError(null);
       const res = await axios.get('/history');

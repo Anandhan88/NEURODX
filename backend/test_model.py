@@ -23,7 +23,7 @@ def preprocess_image(img):
 
 def test_model():
     try:
-        print("Testing model loading and prediction...")
+        print("Testing model loading and prediction..." )
         
         # Check if model file exists
         model_path = os.path.join("model", "brain_tumor_classifier.h5")
