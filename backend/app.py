@@ -295,11 +295,10 @@ def predict():
         start_time = time.time()
         img = None
 
-        if request.is_json:
-            data = request.get_json() or {}
-            b64_str = data.get("image") or data.get("file") or data.get("b64")
-            if not b64_str:
-                return jsonify({'error': 'No image data provided in JSON payload'}), 400
+        # 1. Try reading JSON payload (base64 image string)
+        data = request.get_json(silent=True, force=True) or {}
+        b64_str = data.get("image") or data.get("file") or data.get("b64")
+        if b64_str:
             if "," in b64_str:
                 b64_str = b64_str.split(",", 1)[1]
             try:
@@ -307,17 +306,20 @@ def predict():
                 img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
             except Exception as b64_err:
                 return jsonify({'error': f'Invalid base64 image data: {str(b64_err)}'}), 400
-        elif 'file' in request.files:
+
+        # 2. Try reading multipart file upload
+        if img is None and 'file' in request.files:
             file = request.files['file']
-            if not file or file.filename == '':
-                return jsonify({'error': 'No file selected'}), 400
-            try:
-                img_bytes = file.read()
-                img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
-            except Exception as img_err:
-                print(f"[PREDICT ERROR] Image reading failed: {img_err}")
-                return jsonify({'error': f'Invalid image format: {str(img_err)}'}), 400
-        else:
+            if file and file.filename != '':
+                try:
+                    img_bytes = file.read()
+                    img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+                except Exception as img_err:
+                    print(f"[PREDICT ERROR] Image reading failed: {img_err}")
+                    return jsonify({'error': f'Invalid image format: {str(img_err)}'}), 400
+
+        # 3. Fallback: try raw request bytes
+        if img is None:
             try:
                 raw_bytes = request.get_data()
                 if raw_bytes and len(raw_bytes) > 0:
@@ -326,7 +328,7 @@ def predict():
                 pass
 
         if img is None:
-            return jsonify({'error': 'No file uploaded or invalid image payload'}), 400
+            return jsonify({'error': 'No image file uploaded or invalid image payload'}), 400
 
         is_ready = get_model()
         if not is_ready:
