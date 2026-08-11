@@ -287,24 +287,46 @@ def signup():
         print(f"[SIGNUP ERROR] Exception during signup:\n{traceback.format_exc()}")
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
+import base64
+
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
         start_time = time.time()
-        if 'file' not in request.files:
-            return jsonify({'error': 'No file uploaded'}), 400
+        img = None
 
-        file = request.files['file']
-        if not file or file.filename == '':
-            return jsonify({'error': 'No file selected'}), 400
+        if request.is_json:
+            data = request.get_json() or {}
+            b64_str = data.get("image") or data.get("file") or data.get("b64")
+            if not b64_str:
+                return jsonify({'error': 'No image data provided in JSON payload'}), 400
+            if "," in b64_str:
+                b64_str = b64_str.split(",", 1)[1]
+            try:
+                img_bytes = base64.b64decode(b64_str)
+                img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+            except Exception as b64_err:
+                return jsonify({'error': f'Invalid base64 image data: {str(b64_err)}'}), 400
+        elif 'file' in request.files:
+            file = request.files['file']
+            if not file or file.filename == '':
+                return jsonify({'error': 'No file selected'}), 400
+            try:
+                img_bytes = file.read()
+                img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+            except Exception as img_err:
+                print(f"[PREDICT ERROR] Image reading failed: {img_err}")
+                return jsonify({'error': f'Invalid image format: {str(img_err)}'}), 400
+        else:
+            try:
+                raw_bytes = request.get_data()
+                if raw_bytes and len(raw_bytes) > 0:
+                    img = Image.open(io.BytesIO(raw_bytes)).convert("RGB")
+            except Exception:
+                pass
 
-        try:
-            import io
-            img_bytes = file.read()
-            img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
-        except Exception as img_err:
-            print(f"[PREDICT ERROR] Image reading failed: {img_err}")
-            return jsonify({'error': f'Invalid image format: {str(img_err)}'}), 400
+        if img is None:
+            return jsonify({'error': 'No file uploaded or invalid image payload'}), 400
 
         is_ready = get_model()
         if not is_ready:

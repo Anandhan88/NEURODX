@@ -104,14 +104,28 @@ function UploadForm({ onResult }) {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
       setLoading(true);
       setError(null);
       
-      const response = await axios.post('/predict', formData, { timeout: 90000 });
+      let response;
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        response = await axios.post('/predict', formData, { timeout: 90000 });
+      } catch (firstErr) {
+        if (firstErr.response && firstErr.response.status !== 502) {
+          throw firstErr;
+        }
+        console.warn("Multipart proxy 502 detected. Falling back to Base64 JSON payload...");
+        const base64Data = preview || await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result);
+          r.onerror = reject;
+          r.readAsDataURL(file);
+        });
+        response = await axios.post('/predict', { image: base64Data }, { timeout: 90000 });
+      }
       
       // Let the steps finish gracefully
       setLoadingStepIndex(loadingSteps.length - 2);
