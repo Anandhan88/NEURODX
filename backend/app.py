@@ -124,22 +124,10 @@ def load_classifier_model():
             model_loading = False
         return model
 
-def _start_background_model_load():
-    thread = threading.Thread(target=load_classifier_model, daemon=True)
-    thread.start()
-
-# Launch TensorFlow model load in background daemon thread for INSTANT server startup (<0.3s)
-_start_background_model_load()
-
 def get_model():
     if model is not None:
         return model
-    if model_loading:
-        print("[INFO] Waiting for background model load to finish...")
-        start_wait = time.time()
-        while model_loading and (time.time() - start_wait < 25):
-            time.sleep(0.2)
-    return model or load_classifier_model()
+    return load_classifier_model()
 
 # Class labels
 class_labels = ['Glioma', 'Meningioma', 'No Tumor', 'Pituitary']

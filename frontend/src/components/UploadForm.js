@@ -111,7 +111,7 @@ function UploadForm({ onResult }) {
       setLoading(true);
       setError(null);
       
-      const response = await axios.post('/predict', formData);
+      const response = await axios.post('/predict', formData, { timeout: 90000 });
       
       // Let the steps finish gracefully
       setLoadingStepIndex(loadingSteps.length - 2);
@@ -120,7 +120,12 @@ function UploadForm({ onResult }) {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       setResult(response.data);
-      await logScanToDatabase(response.data.class, response.data.confidence);
+      
+      try {
+        await logScanToDatabase(response.data.class, response.data.confidence);
+      } catch (dbErr) {
+        console.warn("Audit logging warning:", dbErr);
+      }
       
       onResult({
         ...response.data,
@@ -131,7 +136,14 @@ function UploadForm({ onResult }) {
       });
     } catch (err) {
       console.error('Scan prediction error:', err);
-      setError(err.response?.data?.error || "Analysis failed. Please verify the image file and check server logs.");
+      const serverErr = err.response?.data?.error;
+      if (serverErr) {
+        setError(serverErr);
+      } else if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        setError("Server is warming up on Render. Please wait 10 seconds and click Initiate AI Diagnosis again.");
+      } else {
+        setError(err.message || "Network error or server cold-starting. Please retry in a few seconds.");
+      }
     } finally {
       setLoading(false);
     }
