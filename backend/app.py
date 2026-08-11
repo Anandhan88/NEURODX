@@ -297,9 +297,12 @@ def predict():
             return jsonify({'error': 'No file selected'}), 400
 
         try:
-            img = Image.open(file.stream).convert("RGB")
+            import io
+            img_bytes = file.read()
+            img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
         except Exception as img_err:
-            return jsonify({'error': f'Invalid or unsupported image file. Please upload a valid MRI scan.'}), 400
+            print(f"[PREDICT ERROR] Image reading failed: {img_err}")
+            return jsonify({'error': f'Invalid image format: {str(img_err)}'}), 400
 
         is_ready = get_model()
         if not is_ready:
@@ -307,15 +310,19 @@ def predict():
             
         img_array = preprocess_image(img)
 
-        # High-performance TFLite inference (~15MB RAM) or Keras fallback
-        if tflite_interpreter is not None:
-            tflite_interpreter.set_tensor(tflite_input_details[0]['index'], img_array)
-            tflite_interpreter.invoke()
-            raw_pred = tflite_interpreter.get_tensor(tflite_output_details[0]['index'])
-        elif model is not None:
-            raw_pred = model(img_array, training=False).numpy()
-        else:
-            return jsonify({'error': 'Model execution failed'}), 500
+        try:
+            if tflite_interpreter is not None:
+                tflite_interpreter.set_tensor(tflite_input_details[0]['index'], img_array)
+                tflite_interpreter.invoke()
+                raw_pred = tflite_interpreter.get_tensor(tflite_output_details[0]['index'])
+            elif model is not None:
+                raw_pred = model(img_array, training=False).numpy()
+            else:
+                return jsonify({'error': 'Model execution failed'}), 500
+        except Exception as infer_err:
+            print(f"[PREDICT ERROR] Inference failed: {infer_err}")
+            traceback.print_exc()
+            return jsonify({'error': f'Inference engine failure: {str(infer_err)}'}), 500
 
         gc.collect()
 
