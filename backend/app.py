@@ -152,6 +152,7 @@ def preprocess_image(img):
 def home():
     return jsonify({
         "status": "running",
+        "version": "1.0.1",
         "message": "NEURODX Brain Tumor Detection API",
         "health": "/health"
     })
@@ -161,9 +162,11 @@ def health_check():
     m = get_model()
     return jsonify({
         'status': 'healthy',
+        'version': '1.0.1',
         'message': 'Brain Tumor Classifier API is running',
         'model_loaded': m is not None,
         'model_loading': model_loading,
+        'model_load_error': model_load_error,
         'database_connected': is_connected()
     })
 
