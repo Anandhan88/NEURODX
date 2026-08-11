@@ -40,14 +40,20 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], "allow_headers": ["Content-Type", "Authorization"]}})
 
-# ========== Lazy / Background Brain Tumor Classifier Model Loader ==========
+# ========== ONNX / TFLite / Keras Brain Tumor Classifier Model Loader ==========
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ONNX_PATH = os.path.join(BASE_DIR, "model", "brain_tumor_classifier.onnx")
 TFLITE_PATH = os.path.join(BASE_DIR, "model", "brain_tumor_classifier.tflite")
 H5_PATH = os.path.join(BASE_DIR, "model", "brain_tumor_classifier.h5")
+
+onnx_session = None
+onnx_input_names = None
+onnx_output_name = None
 
 tflite_interpreter = None
 tflite_input_details = None
 tflite_output_details = None
+
 model = None
 model_loading = False
 model_load_error = None
@@ -65,44 +71,35 @@ def _find_file(filename):
             return candidate
     return None
 
-def create_fallback_model(save_path):
-    print(f"[INFO] Generating self-healing default brain tumor model at: {save_path}")
-    import tensorflow as tf
-    from tensorflow.keras import layers, models
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
-    m = models.Sequential([
-        layers.Input(shape=(150, 150, 3)),
-        layers.Conv2D(16, (3, 3), activation='relu'),
-        layers.MaxPooling2D((2, 2)),
-        layers.Conv2D(32, (3, 3), activation='relu'),
-        layers.MaxPooling2D((2, 2)),
-        layers.Flatten(),
-        layers.Dense(64, activation='relu'),
-        layers.Dense(4, activation='softmax')
-    ])
-    m.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    try:
-        m.save(save_path)
-        print(f"[OK] Self-healing fallback model saved successfully at {save_path}")
-    except Exception as save_err:
-        print(f"[WARN] Could not write fallback model to disk: {save_err}")
-    return m
-
 def load_classifier_model():
+    global onnx_session, onnx_input_names, onnx_output_name
     global tflite_interpreter, tflite_input_details, tflite_output_details
     global model, model_loading, model_load_error
 
-    if tflite_interpreter is not None or model is not None:
+    if onnx_session is not None or tflite_interpreter is not None or model is not None:
         return True
 
     with model_lock:
-        if tflite_interpreter is not None or model is not None:
+        if onnx_session is not None or tflite_interpreter is not None or model is not None:
             return True
         try:
             model_loading = True
             model_load_error = None
 
-            # 1. Try loading TFLite model (15MB RAM - perfect for Render free tier)
+            # 1. Try ONNX Runtime (Ultra-fast, 20MB RAM, zero TF overhead - best for Render)
+            target_onnx = _find_file("brain_tumor_classifier.onnx")
+            if target_onnx and os.path.exists(target_onnx):
+                print(f"[INFO] Loading ONNX model from: {target_onnx}")
+                import onnxruntime as ort
+                sess = ort.InferenceSession(target_onnx, providers=['CPUExecutionProvider'])
+                onnx_input_names = [i.name for i in sess.get_inputs()]
+                onnx_output_name = sess.get_outputs()[0].name
+                onnx_session = sess
+                model_load_error = None
+                print("[OK] ONNX Runtime Model loaded successfully! (20MB low-RAM mode active)")
+                return True
+
+            # 2. Try TFLite model
             target_tflite = _find_file("brain_tumor_classifier.tflite")
             if target_tflite and os.path.exists(target_tflite):
                 print(f"[INFO] Loading TFLite model from: {target_tflite}")
@@ -120,7 +117,7 @@ def load_classifier_model():
                 print("[OK] TFLite Model loaded successfully! (15MB low-RAM mode active)")
                 return True
 
-            # 2. Try loading H5 model
+            # 3. Try Keras H5 model
             target_h5 = _find_file("brain_tumor_classifier.h5")
             if target_h5 and os.path.exists(target_h5):
                 print(f"[INFO] Loading Keras H5 model from: {target_h5}")
@@ -131,22 +128,19 @@ def load_classifier_model():
                 print("[OK] Keras Model loaded successfully!")
                 return True
 
-            # 3. Fallback model creation
-            print(f"[INFO] Model files missing. Creating self-healing model...")
-            model = create_fallback_model(H5_PATH)
-            model_load_error = None
-            return True
+            model_load_error = "No valid model file found (.onnx, .tflite, .h5)"
+            return False
 
         except Exception as e:
             print(f"[ERROR] Error loading model: {e}")
             traceback.print_exc()
             model_load_error = str(e)
+            return False
         finally:
             model_loading = False
-        return (tflite_interpreter is not None or model is not None)
 
 def get_model():
-    if tflite_interpreter is not None or model is not None:
+    if onnx_session is not None or tflite_interpreter is not None or model is not None:
         return True
     return load_classifier_model()
 
@@ -311,7 +305,19 @@ def predict():
         img_array = preprocess_image(img)
 
         try:
-            if tflite_interpreter is not None:
+            if onnx_session is not None:
+                inputs = {}
+                for name in onnx_input_names:
+                    if 'input_layer' in name or name == onnx_input_names[0]:
+                        inputs[name] = img_array
+                    elif 'Sub/y' in name:
+                        inputs[name] = np.zeros((1, 1, 1, 3), dtype=np.float32)
+                    elif 'Sqrt/x' in name:
+                        inputs[name] = np.ones((1, 1, 1, 3), dtype=np.float32)
+                    else:
+                        inputs[name] = np.zeros((1, 1, 1, 3), dtype=np.float32)
+                raw_pred = onnx_session.run([onnx_output_name], inputs)[0]
+            elif tflite_interpreter is not None:
                 tflite_interpreter.set_tensor(tflite_input_details[0]['index'], img_array)
                 tflite_interpreter.invoke()
                 raw_pred = tflite_interpreter.get_tensor(tflite_output_details[0]['index'])
