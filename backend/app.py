@@ -101,18 +101,17 @@ def load_classifier_model():
         try:
             model_loading = True
             model_load_error = None
-            import tensorflow as tf
-            try:
-                tf.config.threading.set_inter_op_parallelism_threads(1)
-                tf.config.threading.set_intra_op_parallelism_threads(1)
-            except Exception:
-                pass
 
             # 1. Try loading TFLite model (15MB RAM - perfect for Render free tier)
             target_tflite = _find_file("brain_tumor_classifier.tflite")
             if target_tflite and os.path.exists(target_tflite):
                 print(f"[INFO] Loading TFLite model from: {target_tflite}")
-                interp = tf.lite.Interpreter(model_path=target_tflite)
+                try:
+                    import tflite_runtime.interpreter as tflite
+                except ImportError:
+                    import tensorflow.lite as tflite
+
+                interp = tflite.Interpreter(model_path=target_tflite)
                 interp.allocate_tensors()
                 tflite_input_details = interp.get_input_details()
                 tflite_output_details = interp.get_output_details()
@@ -125,6 +124,7 @@ def load_classifier_model():
             target_h5 = _find_file("brain_tumor_classifier.h5")
             if target_h5 and os.path.exists(target_h5):
                 print(f"[INFO] Loading Keras H5 model from: {target_h5}")
+                import tensorflow as tf
                 from tensorflow.keras.models import load_model
                 model = load_model(target_h5)
                 model_load_error = None
