@@ -830,8 +830,8 @@ def after_request(response):
 # ========== Run Flask App ==========
 if __name__ == '__main__':
     print("[INFO] Starting Brain Tumor Classifier API...")
-    print(f"Model path: {MODEL_PATH}")
-    print(f"Model file exists: {os.path.exists(MODEL_PATH)}")
+    print(f"ONNX Model path: {ONNX_PATH}")
+    print(f"ONNX Model file exists: {os.path.exists(ONNX_PATH)}")
     print(f"MongoDB Connected: {is_connected()}")
     if db.db is not None:
         print(f"[STARTUP LOG] Connected Database Name: {db.db.name}")
