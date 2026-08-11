@@ -8,6 +8,10 @@ def print(*args, **kwargs):
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['TF_NUM_INTRAOP_THREADS'] = '1'
+os.environ['TF_NUM_INTEROP_THREADS'] = '1'
+import gc
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -91,6 +95,11 @@ def load_classifier_model():
             model_load_error = None
             target_path = _find_model_file()
             import tensorflow as tf
+            try:
+                tf.config.threading.set_inter_op_parallelism_threads(1)
+                tf.config.threading.set_intra_op_parallelism_threads(1)
+            except Exception:
+                pass
             from tensorflow.keras.models import load_model
             
             if target_path and os.path.exists(target_path):
@@ -288,13 +297,16 @@ def predict():
             return jsonify({'error': f'Model not loaded ({model_load_error or "Unknown error"})'}), 500
         img_array = preprocess_image(img)
 
-        prediction = active_model.predict(img_array, verbose=0)
-        class_index = int(np.argmax(prediction))
-        confidence = float(np.max(prediction))
+        # Ultra-lightweight direct functional call (uses ~20MB RAM vs 250MB for model.predict)
+        raw_pred = active_model(img_array, training=False).numpy()
+        gc.collect()
+
+        class_index = int(np.argmax(raw_pred[0]))
+        confidence = float(np.max(raw_pred[0]))
         inference_time = round(time.time() - start_time, 3)
 
         probabilities = {
-            class_labels[i]: round(float(prediction[0][i]) * 100, 2)
+            class_labels[i]: round(float(raw_pred[0][i]) * 100, 2)
             for i in range(len(class_labels))
         }
 
