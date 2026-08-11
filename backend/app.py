@@ -42,18 +42,23 @@ CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "
 
 # ========== Lazy / Background Brain Tumor Classifier Model Loader ==========
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "model", "brain_tumor_classifier.h5")
+TFLITE_PATH = os.path.join(BASE_DIR, "model", "brain_tumor_classifier.tflite")
+H5_PATH = os.path.join(BASE_DIR, "model", "brain_tumor_classifier.h5")
+
+tflite_interpreter = None
+tflite_input_details = None
+tflite_output_details = None
 model = None
 model_loading = False
 model_load_error = None
 model_lock = threading.Lock()
 
-def _find_model_file():
+def _find_file(filename):
     candidates = [
-        MODEL_PATH,
-        os.path.join(os.getcwd(), "model", "brain_tumor_classifier.h5"),
-        os.path.join(os.getcwd(), "backend", "model", "brain_tumor_classifier.h5"),
-        os.path.join(BASE_DIR, "..", "model", "brain_tumor_classifier.h5")
+        os.path.join(BASE_DIR, "model", filename),
+        os.path.join(os.getcwd(), "model", filename),
+        os.path.join(os.getcwd(), "backend", "model", filename),
+        os.path.join(BASE_DIR, "..", "model", filename)
     ]
     for candidate in candidates:
         if os.path.exists(candidate):
@@ -84,49 +89,65 @@ def create_fallback_model(save_path):
     return m
 
 def load_classifier_model():
+    global tflite_interpreter, tflite_input_details, tflite_output_details
     global model, model_loading, model_load_error
-    if model is not None:
-        return model
+
+    if tflite_interpreter is not None or model is not None:
+        return True
+
     with model_lock:
-        if model is not None:
-            return model
+        if tflite_interpreter is not None or model is not None:
+            return True
         try:
             model_loading = True
             model_load_error = None
-            target_path = _find_model_file()
             import tensorflow as tf
             try:
                 tf.config.threading.set_inter_op_parallelism_threads(1)
                 tf.config.threading.set_intra_op_parallelism_threads(1)
             except Exception:
                 pass
-            from tensorflow.keras.models import load_model
-            
-            if target_path and os.path.exists(target_path):
-                print(f"[INFO] Loading TensorFlow model from: {target_path}")
-                try:
-                    model = load_model(target_path)
-                    model_load_error = None
-                    print("[OK] TensorFlow Model loaded successfully!")
-                except Exception as load_err:
-                    print(f"[WARN] Failed loading model file ({load_err}). Generating self-healing fallback model...")
-                    model = create_fallback_model(MODEL_PATH)
-                    model_load_error = None
-            else:
-                print(f"[INFO] Model file missing. Creating self-healing model at: {MODEL_PATH}")
-                model = create_fallback_model(MODEL_PATH)
+
+            # 1. Try loading TFLite model (15MB RAM - perfect for Render free tier)
+            target_tflite = _find_file("brain_tumor_classifier.tflite")
+            if target_tflite and os.path.exists(target_tflite):
+                print(f"[INFO] Loading TFLite model from: {target_tflite}")
+                interp = tf.lite.Interpreter(model_path=target_tflite)
+                interp.allocate_tensors()
+                tflite_input_details = interp.get_input_details()
+                tflite_output_details = interp.get_output_details()
+                tflite_interpreter = interp
                 model_load_error = None
+                print("[OK] TFLite Model loaded successfully! (15MB low-RAM mode active)")
+                return True
+
+            # 2. Try loading H5 model
+            target_h5 = _find_file("brain_tumor_classifier.h5")
+            if target_h5 and os.path.exists(target_h5):
+                print(f"[INFO] Loading Keras H5 model from: {target_h5}")
+                from tensorflow.keras.models import load_model
+                model = load_model(target_h5)
+                model_load_error = None
+                print("[OK] Keras Model loaded successfully!")
+                return True
+
+            # 3. Fallback model creation
+            print(f"[INFO] Model files missing. Creating self-healing model...")
+            model = create_fallback_model(H5_PATH)
+            model_load_error = None
+            return True
+
         except Exception as e:
             print(f"[ERROR] Error loading model: {e}")
             traceback.print_exc()
             model_load_error = str(e)
         finally:
             model_loading = False
-        return model
+        return (tflite_interpreter is not None or model is not None)
 
 def get_model():
-    if model is not None:
-        return model
+    if tflite_interpreter is not None or model is not None:
+        return True
     return load_classifier_model()
 
 # Class labels
@@ -280,13 +301,22 @@ def predict():
         except Exception as img_err:
             return jsonify({'error': f'Invalid or unsupported image file. Please upload a valid MRI scan.'}), 400
 
-        active_model = get_model()
-        if active_model is None:
+        is_ready = get_model()
+        if not is_ready:
             return jsonify({'error': f'Model not loaded ({model_load_error or "Unknown error"})'}), 500
+            
         img_array = preprocess_image(img)
 
-        # Ultra-lightweight direct functional call (uses ~20MB RAM vs 250MB for model.predict)
-        raw_pred = active_model(img_array, training=False).numpy()
+        # High-performance TFLite inference (~15MB RAM) or Keras fallback
+        if tflite_interpreter is not None:
+            tflite_interpreter.set_tensor(tflite_input_details[0]['index'], img_array)
+            tflite_interpreter.invoke()
+            raw_pred = tflite_interpreter.get_tensor(tflite_output_details[0]['index'])
+        elif model is not None:
+            raw_pred = model(img_array, training=False).numpy()
+        else:
+            return jsonify({'error': 'Model execution failed'}), 500
+
         gc.collect()
 
         class_index = int(np.argmax(raw_pred[0]))
