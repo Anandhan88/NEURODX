@@ -39,8 +39,7 @@ env/
 *.swp
 *.swo
 
-# Ignore model files
-backend/model/*.h5
+# Model files included in repository for deployment
 
 # Dataset (too large for git)
 dataset/
