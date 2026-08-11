@@ -182,7 +182,7 @@ def health_check():
     m = get_model()
     return jsonify({
         'status': 'healthy',
-        'version': '1.0.1',
+        'version': '1.0.2-onnx',
         'message': 'Brain Tumor Classifier API is running',
         'model_loaded': m is not None,
         'model_loading': model_loading,
