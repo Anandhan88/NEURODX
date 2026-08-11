@@ -38,7 +38,15 @@ load_dotenv()
 
 # ========== Initialize Flask app ==========
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], "allow_headers": ["Content-Type", "Authorization"]}})
+
+import io
+try:
+    import werkzeug.formparser
+    werkzeug.formparser.default_stream_factory = lambda total_content_length, filename, content_type, content_length=None: io.BytesIO()
+except Exception:
+    pass
 
 # ========== ONNX / TFLite / Keras Brain Tumor Classifier Model Loader ==========
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
